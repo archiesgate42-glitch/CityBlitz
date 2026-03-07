@@ -1,0 +1,152 @@
+{"timestamp": "2026-03-07T20:47:26.640738+00:00", "agent": "Orchestrator", "action": "run_cascade", "outcome": "started"}
+{"timestamp": "2026-03-07T20:47:26.641033+00:00", "agent": "Orchestrator", "action": "janitor_phase", "outcome": "started"}
+{"timestamp": "2026-03-07T20:47:42.793944+00:00", "agent": "Orchestrator", "action": "janitor_phase", "outcome": "success", "detail": {"files_processed": 4, "files_failed": 0}}
+{"timestamp": "2026-03-07T20:47:42.794085+00:00", "agent": "Orchestrator", "action": "analyst_phase", "outcome": "started"}
+{"timestamp": "2026-03-07T20:47:42.795205+00:00", "agent": "Orchestrator", "action": "analyst_phase", "outcome": "success", "detail": {"hotspots_detected": 4}}
+{"timestamp": "2026-03-07T20:47:42.795288+00:00", "agent": "Orchestrator", "action": "observer_phase", "outcome": "started", "detail": {"hotspots_detected": 4}}
+{"timestamp": "2026-03-07T20:47:42.796481+00:00", "agent": "Orchestrator", "action": "observer_phase", "outcome": "success", "detail": {"locations": 4}}
+{"timestamp": "2026-03-07T20:47:42.796748+00:00", "agent": "Orchestrator", "action": "write_priority_roadmap", "outcome": "success", "detail": {"file": "cityblitz_priority_roadmap.json"}}
+{"timestamp": "2026-03-07T20:47:42.796811+00:00", "agent": "Orchestrator", "action": "run_cascade", "outcome": "completed", "detail": {"red_zone": {"location": "Received_311_Service_Request", "vibe_score": 0.5, "friction_score": 1.0, "priority": "Standard"}}}
+{"timestamp": "2026-03-07T20:57:43.652913+00:00", "agent": "Orchestrator", "action": "run_cascade", "outcome": "started"}
+{"timestamp": "2026-03-07T20:57:43.653096+00:00", "agent": "Orchestrator", "action": "janitor_phase", "outcome": "started"}
+{"timestamp": "2026-03-07T20:57:43.654137+00:00", "agent": "Orchestrator", "action": "janitor_phase", "outcome": "critical_failure", "detail": {"files_processed": 0, "files_failed": 0, "message": "Critical Data Integrity Failure: Janitor could not produce a clean dataset."}}
+{"timestamp": "2026-03-07T20:57:43.654440+00:00", "agent": "Orchestrator", "action": "run_cascade", "outcome": "stopped", "detail": {"phase": "Janitor", "error": "Critical Data Integrity Failure: Janitor could not produce a clean dataset."}}
+{"timestamp": "2026-03-07T21:00:30.632758+00:00", "agent": "Orchestrator", "action": "run_cascade", "outcome": "started"}
+{"timestamp": "2026-03-07T21:00:30.632951+00:00", "agent": "Orchestrator", "action": "janitor_phase", "outcome": "started"}
+{"timestamp": "2026-03-07T21:00:51.981131+00:00", "agent": "Orchestrator", "action": "janitor_phase", "outcome": "success", "detail": {"files_processed": 4, "files_failed": 0}}
+{"timestamp": "2026-03-07T21:00:51.981253+00:00", "agent": "Orchestrator", "action": "analyst_phase", "outcome": "started"}
+{"timestamp": "2026-03-07T21:00:51.982435+00:00", "agent": "Orchestrator", "action": "analyst_phase", "outcome": "success", "detail": {"hotspots_detected": 4}}
+{"timestamp": "2026-03-07T21:00:51.982506+00:00", "agent": "Orchestrator", "action": "observer_phase", "outcome": "started", "detail": {"hotspots_detected": 4}}
+{"timestamp": "2026-03-07T21:00:55.367032+00:00", "agent": "Orchestrator", "action": "observer_phase", "outcome": "success", "detail": {"locations": 4}}
+{"timestamp": "2026-03-07T21:00:55.367711+00:00", "agent": "Orchestrator", "action": "write_priority_roadmap", "outcome": "success", "detail": {"file": "cityblitz_priority_roadmap.json"}}
+{"timestamp": "2026-03-07T21:00:55.367891+00:00", "agent": "Orchestrator", "action": "run_cascade", "outcome": "completed", "detail": {"red_zone": {"location": "Received_311_Service_Request", "vibe_score": 0.5, "friction_score": 1.0, "priority": "Standard"}}}
+{"timestamp": "2026-03-07T21:01:24.065512+00:00", "agent": "Orchestrator", "action": "run_cascade", "outcome": "started"}
+{"timestamp": "2026-03-07T21:01:24.065729+00:00", "agent": "Orchestrator", "action": "janitor_phase", "outcome": "started"}
+{"timestamp": "2026-03-07T21:01:24.066712+00:00", "agent": "Orchestrator", "action": "janitor_phase", "outcome": "critical_failure", "detail": {"files_processed": 0, "files_failed": 0, "message": "Critical Data Integrity Failure: Janitor could not produce a clean dataset."}}
+{"timestamp": "2026-03-07T21:01:24.066928+00:00", "agent": "Orchestrator", "action": "run_cascade", "outcome": "stopped", "detail": {"phase": "Janitor", "error": "Critical Data Integrity Failure: Janitor could not produce a clean dataset."}}
+{"timestamp": "2026-03-07T21:01:33.548460+00:00", "agent": "Orchestrator", "action": "run_cascade", "outcome": "started"}
+{"timestamp": "2026-03-07T21:01:33.548667+00:00", "agent": "Orchestrator", "action": "janitor_phase", "outcome": "started"}
+{"timestamp": "2026-03-07T21:01:46.255527+00:00", "agent": "Orchestrator", "action": "janitor_phase", "outcome": "success", "detail": {"files_processed": 1, "files_failed": 0}}
+{"timestamp": "2026-03-07T21:01:46.255650+00:00", "agent": "Orchestrator", "action": "analyst_phase", "outcome": "started"}
+{"timestamp": "2026-03-07T21:01:46.256983+00:00", "agent": "Orchestrator", "action": "analyst_phase", "outcome": "success", "detail": {"hotspots_detected": 4}}
+{"timestamp": "2026-03-07T21:01:46.257104+00:00", "agent": "Orchestrator", "action": "observer_phase", "outcome": "started", "detail": {"hotspots_detected": 4}}
+{"timestamp": "2026-03-07T21:01:49.529466+00:00", "agent": "Orchestrator", "action": "observer_phase", "outcome": "success", "detail": {"locations": 4}}
+{"timestamp": "2026-03-07T21:01:49.530347+00:00", "agent": "Orchestrator", "action": "write_priority_roadmap", "outcome": "success", "detail": {"file": "cityblitz_priority_roadmap.json"}}
+{"timestamp": "2026-03-07T21:01:49.530534+00:00", "agent": "Orchestrator", "action": "run_cascade", "outcome": "completed", "detail": {"red_zone": {"location": "Received_311_Service_Request", "vibe_score": 0.5, "friction_score": 1.0, "priority": "Standard"}}}
+{"timestamp": "2026-03-07T21:03:20.552649+00:00", "agent": "Orchestrator", "action": "run_cascade", "outcome": "started"}
+{"timestamp": "2026-03-07T21:03:20.552850+00:00", "agent": "Orchestrator", "action": "janitor_phase", "outcome": "started"}
+{"timestamp": "2026-03-07T21:03:20.553777+00:00", "agent": "Orchestrator", "action": "janitor_phase", "outcome": "critical_failure", "detail": {"files_processed": 0, "files_failed": 0, "message": "Critical Data Integrity Failure: Janitor could not produce a clean dataset."}}
+{"timestamp": "2026-03-07T21:03:20.553982+00:00", "agent": "Orchestrator", "action": "run_cascade", "outcome": "stopped", "detail": {"phase": "Janitor", "error": "Critical Data Integrity Failure: Janitor could not produce a clean dataset."}}
+{"timestamp": "2026-03-07T21:03:54.453127+00:00", "agent": "Orchestrator", "action": "run_cascade", "outcome": "started"}
+{"timestamp": "2026-03-07T21:03:54.453337+00:00", "agent": "Orchestrator", "action": "janitor_phase", "outcome": "started"}
+{"timestamp": "2026-03-07T21:03:54.454240+00:00", "agent": "Orchestrator", "action": "janitor_phase", "outcome": "no_new_raw_data", "detail": {"files_processed": 0, "files_failed": 0, "message": "No new raw files in data/raw (all data already processed or folder empty)."}}
+{"timestamp": "2026-03-07T21:03:54.454477+00:00", "agent": "Orchestrator", "action": "analyst_phase", "outcome": "started"}
+{"timestamp": "2026-03-07T21:03:54.456710+00:00", "agent": "Orchestrator", "action": "analyst_phase", "outcome": "success", "detail": {"hotspots_detected": 4}}
+{"timestamp": "2026-03-07T21:03:54.456928+00:00", "agent": "Orchestrator", "action": "observer_phase", "outcome": "started", "detail": {"hotspots_detected": 4}}
+{"timestamp": "2026-03-07T21:04:01.109803+00:00", "agent": "Orchestrator", "action": "observer_phase", "outcome": "success", "detail": {"locations": 4}}
+{"timestamp": "2026-03-07T21:04:01.110771+00:00", "agent": "Orchestrator", "action": "write_priority_roadmap", "outcome": "success", "detail": {"file": "cityblitz_priority_roadmap.json"}}
+{"timestamp": "2026-03-07T21:04:01.110962+00:00", "agent": "Orchestrator", "action": "run_cascade", "outcome": "completed", "detail": {"red_zone": {"location": "Received_311_Service_Request", "vibe_score": 0.5, "friction_score": 1.0, "priority": "Standard"}}}
+{"timestamp": "2026-03-07T21:06:21.566146+00:00", "agent": "Orchestrator", "action": "run_cascade", "outcome": "started"}
+{"timestamp": "2026-03-07T21:06:21.566404+00:00", "agent": "Orchestrator", "action": "janitor_phase", "outcome": "started"}
+{"timestamp": "2026-03-07T21:06:21.567279+00:00", "agent": "Orchestrator", "action": "janitor_phase", "outcome": "no_new_raw_data", "detail": {"files_processed": 0, "files_failed": 0, "message": "No new raw files in data/raw (all data already processed or folder empty)."}}
+{"timestamp": "2026-03-07T21:06:21.567499+00:00", "agent": "Orchestrator", "action": "analyst_phase", "outcome": "started"}
+{"timestamp": "2026-03-07T21:06:21.569865+00:00", "agent": "Orchestrator", "action": "analyst_phase", "outcome": "success", "detail": {"hotspots_detected": 4}}
+{"timestamp": "2026-03-07T21:06:21.570057+00:00", "agent": "Orchestrator", "action": "observer_phase", "outcome": "started", "detail": {"hotspots_detected": 4}}
+{"timestamp": "2026-03-07T21:06:28.567212+00:00", "agent": "Orchestrator", "action": "observer_phase", "outcome": "success", "detail": {"locations": 4}}
+{"timestamp": "2026-03-07T21:06:28.568014+00:00", "agent": "Orchestrator", "action": "write_priority_roadmap", "outcome": "success", "detail": {"file": "cityblitz_priority_roadmap.json"}}
+{"timestamp": "2026-03-07T21:06:28.568208+00:00", "agent": "Orchestrator", "action": "run_cascade", "outcome": "completed", "detail": {"red_zone": {"location": "Received_311_Service_Request", "vibe_score": 0.5, "friction_score": 1.0, "priority": "Standard"}}}
+{"timestamp": "2026-03-07T21:24:33.249137+00:00", "agent": "Orchestrator", "action": "run_cascade", "outcome": "started"}
+{"timestamp": "2026-03-07T21:24:33.249434+00:00", "agent": "Orchestrator", "action": "janitor_phase", "outcome": "started"}
+{"timestamp": "2026-03-07T21:24:33.250425+00:00", "agent": "Orchestrator", "action": "janitor_phase", "outcome": "no_new_raw_data", "detail": {"files_processed": 0, "files_failed": 0, "message": "No new raw files in data/raw (all data already processed or folder empty)."}}
+{"timestamp": "2026-03-07T21:24:33.250631+00:00", "agent": "Orchestrator", "action": "analyst_phase", "outcome": "started"}
+{"timestamp": "2026-03-07T21:24:33.252874+00:00", "agent": "Orchestrator", "action": "analyst_phase", "outcome": "success", "detail": {"hotspots_detected": 4}}
+{"timestamp": "2026-03-07T21:24:33.253020+00:00", "agent": "Orchestrator", "action": "observer_phase", "outcome": "started", "detail": {"hotspots_detected": 4}}
+{"timestamp": "2026-03-07T21:24:39.068972+00:00", "agent": "Orchestrator", "action": "observer_phase", "outcome": "success", "detail": {"locations": 4}}
+{"timestamp": "2026-03-07T21:24:39.069955+00:00", "agent": "Orchestrator", "action": "write_priority_roadmap", "outcome": "success", "detail": {"file": "cityblitz_priority_roadmap.json"}}
+{"timestamp": "2026-03-07T21:24:39.070136+00:00", "agent": "Orchestrator", "action": "run_cascade", "outcome": "completed", "detail": {"red_zone": {"location": "Received_311_Service_Request", "vibe_score": 0.5, "friction_score": 1.0, "priority": "Standard"}}}
+{"timestamp": "2026-03-07T21:25:05.563746+00:00", "agent": "Orchestrator", "action": "run_cascade", "outcome": "started"}
+{"timestamp": "2026-03-07T21:25:05.563953+00:00", "agent": "Orchestrator", "action": "janitor_phase", "outcome": "started"}
+{"timestamp": "2026-03-07T21:25:05.564816+00:00", "agent": "Orchestrator", "action": "janitor_phase", "outcome": "no_new_raw_data", "detail": {"files_processed": 0, "files_failed": 0, "message": "No new raw files in data/raw (all data already processed or folder empty)."}}
+{"timestamp": "2026-03-07T21:25:05.565077+00:00", "agent": "Orchestrator", "action": "analyst_phase", "outcome": "started"}
+{"timestamp": "2026-03-07T21:25:05.567294+00:00", "agent": "Orchestrator", "action": "analyst_phase", "outcome": "success", "detail": {"hotspots_detected": 4}}
+{"timestamp": "2026-03-07T21:25:05.567492+00:00", "agent": "Orchestrator", "action": "observer_phase", "outcome": "started", "detail": {"hotspots_detected": 4}}
+{"timestamp": "2026-03-07T21:25:12.082945+00:00", "agent": "Orchestrator", "action": "observer_phase", "outcome": "success", "detail": {"locations": 4}}
+{"timestamp": "2026-03-07T21:25:12.083912+00:00", "agent": "Orchestrator", "action": "write_priority_roadmap", "outcome": "success", "detail": {"file": "cityblitz_priority_roadmap.json"}}
+{"timestamp": "2026-03-07T21:25:12.084196+00:00", "agent": "Orchestrator", "action": "run_cascade", "outcome": "completed", "detail": {"red_zone": {"location": "Received_311_Service_Request", "vibe_score": 0.25, "friction_score": 1.0, "priority": "Priority Alpha"}}}
+{"timestamp": "2026-03-07T21:39:31.087105+00:00", "agent": "Orchestrator", "action": "run_cascade", "outcome": "started"}
+{"timestamp": "2026-03-07T21:39:31.087352+00:00", "agent": "Orchestrator", "action": "janitor_phase", "outcome": "started"}
+{"timestamp": "2026-03-07T21:39:31.088273+00:00", "agent": "Orchestrator", "action": "janitor_phase", "outcome": "no_new_raw_data", "detail": {"files_processed": 0, "files_failed": 0, "message": "No new raw files in data/raw (all data already processed or folder empty)."}}
+{"timestamp": "2026-03-07T21:39:31.088526+00:00", "agent": "Orchestrator", "action": "analyst_phase", "outcome": "started"}
+{"timestamp": "2026-03-07T21:39:31.090684+00:00", "agent": "Orchestrator", "action": "analyst_phase", "outcome": "success", "detail": {"hotspots_detected": 4}}
+{"timestamp": "2026-03-07T21:39:31.090827+00:00", "agent": "Orchestrator", "action": "observer_phase", "outcome": "started", "detail": {"hotspots_detected": 4}}
+{"timestamp": "2026-03-07T21:39:37.868334+00:00", "agent": "Orchestrator", "action": "observer_phase", "outcome": "success", "detail": {"locations": 4}}
+{"timestamp": "2026-03-07T21:39:37.869078+00:00", "agent": "Orchestrator", "action": "write_priority_roadmap", "outcome": "success", "detail": {"file": "cityblitz_priority_roadmap.json"}}
+{"timestamp": "2026-03-07T21:39:37.869263+00:00", "agent": "Orchestrator", "action": "impact_phase", "outcome": "started"}
+{"timestamp": "2026-03-07T21:39:37.870241+00:00", "agent": "Orchestrator", "action": "impact_phase", "outcome": "skipped_or_no_output"}
+{"timestamp": "2026-03-07T21:39:37.870458+00:00", "agent": "Orchestrator", "action": "run_cascade", "outcome": "completed", "detail": {"red_zone": {"location": "Received_311_Service_Request", "vibe_score": 0.25, "friction_score": 1.0, "priority": "Priority Alpha"}, "impact": {"target_location": null}}}
+{"timestamp": "2026-03-07T21:44:25.521001+00:00", "agent": "Orchestrator", "action": "run_cascade", "outcome": "started"}
+{"timestamp": "2026-03-07T21:44:25.521220+00:00", "agent": "Orchestrator", "action": "janitor_phase", "outcome": "started"}
+{"timestamp": "2026-03-07T21:44:25.522133+00:00", "agent": "Orchestrator", "action": "janitor_phase", "outcome": "no_new_raw_data", "detail": {"files_processed": 0, "files_failed": 0, "message": "No new raw files in data/raw (all data already processed or folder empty)."}}
+{"timestamp": "2026-03-07T21:44:25.522442+00:00", "agent": "Orchestrator", "action": "analyst_phase", "outcome": "started"}
+{"timestamp": "2026-03-07T21:44:25.524739+00:00", "agent": "Orchestrator", "action": "analyst_phase", "outcome": "success", "detail": {"hotspots_detected": 4}}
+{"timestamp": "2026-03-07T21:44:25.524923+00:00", "agent": "Orchestrator", "action": "observer_phase", "outcome": "started", "detail": {"hotspots_detected": 4}}
+{"timestamp": "2026-03-07T21:44:29.608764+00:00", "agent": "Orchestrator", "action": "observer_phase", "outcome": "success", "detail": {"locations": 4}}
+{"timestamp": "2026-03-07T21:44:29.609703+00:00", "agent": "Orchestrator", "action": "write_priority_roadmap", "outcome": "success", "detail": {"file": "cityblitz_priority_roadmap.json"}}
+{"timestamp": "2026-03-07T21:44:29.609912+00:00", "agent": "Orchestrator", "action": "impact_phase", "outcome": "started"}
+{"timestamp": "2026-03-07T21:44:29.627328+00:00", "agent": "Orchestrator", "action": "impact_phase", "outcome": "success", "detail": {"target_location": "Received_311_Service_Request", "projected_calls_avoided_mid": 15, "estimated_emergency_cost_savings": 12000.0}}
+{"timestamp": "2026-03-07T21:44:29.627559+00:00", "agent": "Orchestrator", "action": "run_cascade", "outcome": "completed", "detail": {"red_zone": {"location": "Received_311_Service_Request", "vibe_score": 0.25, "friction_score": 1.0, "priority": "Priority Alpha"}, "impact": {"target_location": "Received_311_Service_Request"}}}
+{"timestamp": "2026-03-07T22:08:05.006814+00:00", "agent": "Orchestrator", "action": "run_cascade", "outcome": "started"}
+{"timestamp": "2026-03-07T22:08:05.007221+00:00", "agent": "Orchestrator", "action": "janitor_phase", "outcome": "started"}
+{"timestamp": "2026-03-07T22:08:05.008119+00:00", "agent": "Orchestrator", "action": "janitor_phase", "outcome": "no_new_raw_data", "detail": {"files_processed": 0, "files_failed": 0, "message": "No new raw files in data/raw (all data already processed or folder empty)."}}
+{"timestamp": "2026-03-07T22:08:05.008346+00:00", "agent": "Orchestrator", "action": "analyst_phase", "outcome": "started"}
+{"timestamp": "2026-03-07T22:08:05.010606+00:00", "agent": "Orchestrator", "action": "analyst_phase", "outcome": "success", "detail": {"hotspots_detected": 4}}
+{"timestamp": "2026-03-07T22:08:05.010758+00:00", "agent": "Orchestrator", "action": "observer_phase", "outcome": "started", "detail": {"hotspots_detected": 4}}
+{"timestamp": "2026-03-07T22:08:08.764804+00:00", "agent": "Orchestrator", "action": "observer_phase", "outcome": "success", "detail": {"locations": 4}}
+{"timestamp": "2026-03-07T22:08:08.765484+00:00", "agent": "Orchestrator", "action": "write_priority_roadmap", "outcome": "success", "detail": {"file": "cityblitz_priority_roadmap.json"}}
+{"timestamp": "2026-03-07T22:08:08.765691+00:00", "agent": "Orchestrator", "action": "impact_phase", "outcome": "started"}
+{"timestamp": "2026-03-07T22:08:08.783336+00:00", "agent": "Orchestrator", "action": "impact_phase", "outcome": "success", "detail": {"target_location": "Received_311_Service_Request", "projected_calls_avoided_mid": 15, "estimated_emergency_cost_savings": 12000.0}}
+{"timestamp": "2026-03-07T22:08:08.783543+00:00", "agent": "Orchestrator", "action": "run_cascade", "outcome": "completed", "detail": {"red_zone": {"location": "Received_311_Service_Request", "vibe_score": 0.25, "friction_score": 1.0, "priority": "Priority Alpha"}, "impact": {"target_location": "Received_311_Service_Request"}}}
+{"timestamp": "2026-03-07T22:19:25.137154+00:00", "agent": "Orchestrator", "action": "run_cascade", "outcome": "started"}
+{"timestamp": "2026-03-07T22:19:25.138617+00:00", "agent": "Orchestrator", "action": "janitor_phase", "outcome": "started"}
+{"timestamp": "2026-03-07T22:19:25.141126+00:00", "agent": "Orchestrator", "action": "janitor_phase", "outcome": "no_new_raw_data", "detail": {"files_processed": 0, "files_failed": 0, "message": "No new raw files in data/raw (all data already processed or folder empty)."}}
+{"timestamp": "2026-03-07T22:19:25.141415+00:00", "agent": "Orchestrator", "action": "analyst_phase", "outcome": "started"}
+{"timestamp": "2026-03-07T22:19:25.143833+00:00", "agent": "Orchestrator", "action": "analyst_phase", "outcome": "success", "detail": {"hotspots_detected": 4}}
+{"timestamp": "2026-03-07T22:19:25.144035+00:00", "agent": "Orchestrator", "action": "observer_phase", "outcome": "started", "detail": {"hotspots_detected": 4}}
+{"timestamp": "2026-03-07T22:19:29.230855+00:00", "agent": "Orchestrator", "action": "observer_phase", "outcome": "success", "detail": {"locations": 4}}
+{"timestamp": "2026-03-07T22:19:29.231571+00:00", "agent": "Orchestrator", "action": "write_priority_roadmap", "outcome": "success", "detail": {"file": "cityblitz_priority_roadmap.json"}}
+{"timestamp": "2026-03-07T22:19:29.231769+00:00", "agent": "Orchestrator", "action": "impact_phase", "outcome": "started"}
+{"timestamp": "2026-03-07T22:19:29.250087+00:00", "agent": "Orchestrator", "action": "impact_phase", "outcome": "success", "detail": {"target_location": "Received_311_Service_Request", "projected_calls_avoided_mid": 15, "estimated_emergency_cost_savings": 12000.0}}
+{"timestamp": "2026-03-07T22:19:29.250295+00:00", "agent": "Orchestrator", "action": "run_cascade", "outcome": "completed", "detail": {"red_zone": {"location": "Received_311_Service_Request", "vibe_score": 0.25, "friction_score": 1.0, "priority": "Priority Alpha"}, "impact": {"target_location": "Received_311_Service_Request"}}}
+{"timestamp": "2026-03-07T22:22:52.090956+00:00", "agent": "Orchestrator", "action": "run_cascade", "outcome": "started"}
+{"timestamp": "2026-03-07T22:22:52.092751+00:00", "agent": "Orchestrator", "action": "janitor_phase", "outcome": "started"}
+{"timestamp": "2026-03-07T22:22:52.093726+00:00", "agent": "Orchestrator", "action": "janitor_phase", "outcome": "no_new_raw_data", "detail": {"files_processed": 0, "files_failed": 0, "message": "No new raw files in data/raw (all data already processed or folder empty)."}}
+{"timestamp": "2026-03-07T22:22:52.094012+00:00", "agent": "Orchestrator", "action": "analyst_phase", "outcome": "started"}
+{"timestamp": "2026-03-07T22:22:52.096144+00:00", "agent": "Orchestrator", "action": "analyst_phase", "outcome": "success", "detail": {"hotspots_detected": 4}}
+{"timestamp": "2026-03-07T22:22:52.096336+00:00", "agent": "Orchestrator", "action": "observer_phase", "outcome": "started", "detail": {"hotspots_detected": 4}}
+{"timestamp": "2026-03-07T22:22:55.877547+00:00", "agent": "Orchestrator", "action": "observer_phase", "outcome": "success", "detail": {"locations": 4}}
+{"timestamp": "2026-03-07T22:22:55.878513+00:00", "agent": "Orchestrator", "action": "write_priority_roadmap", "outcome": "success", "detail": {"file": "cityblitz_priority_roadmap.json"}}
+{"timestamp": "2026-03-07T22:22:55.878688+00:00", "agent": "Orchestrator", "action": "impact_phase", "outcome": "started"}
+{"timestamp": "2026-03-07T22:22:55.895608+00:00", "agent": "Orchestrator", "action": "impact_phase", "outcome": "success", "detail": {"target_location": "Received_311_Service_Request", "projected_calls_avoided_mid": 15, "estimated_emergency_cost_savings": 12000.0}}
+{"timestamp": "2026-03-07T22:22:55.895788+00:00", "agent": "Orchestrator", "action": "run_cascade", "outcome": "completed", "detail": {"red_zone": {"location": "Received_311_Service_Request", "vibe_score": 0.25, "friction_score": 1.0, "priority": "Priority Alpha"}, "impact": {"target_location": "Received_311_Service_Request"}}}
+{"timestamp": "2026-03-07T22:41:51.991812+00:00", "agent": "Orchestrator", "action": "run_cascade", "outcome": "started"}
+{"timestamp": "2026-03-07T22:41:51.992341+00:00", "agent": "Orchestrator", "action": "janitor_phase", "outcome": "started"}
+{"timestamp": "2026-03-07T22:41:51.993586+00:00", "agent": "Orchestrator", "action": "janitor_phase", "outcome": "no_new_raw_data", "detail": {"files_processed": 0, "files_failed": 0, "message": "No new raw files in data/raw (all data already processed or folder empty)."}}
+{"timestamp": "2026-03-07T22:41:51.993797+00:00", "agent": "Orchestrator", "action": "analyst_phase", "outcome": "started"}
+{"timestamp": "2026-03-07T22:41:51.996506+00:00", "agent": "Orchestrator", "action": "analyst_phase", "outcome": "success", "detail": {"hotspots_detected": 4}}
+{"timestamp": "2026-03-07T22:41:51.996730+00:00", "agent": "Orchestrator", "action": "observer_phase", "outcome": "started", "detail": {"hotspots_detected": 4}}
+{"timestamp": "2026-03-07T22:41:53.370822+00:00", "agent": "Orchestrator", "action": "run_cascade", "outcome": "started"}
+{"timestamp": "2026-03-07T22:41:53.371518+00:00", "agent": "Orchestrator", "action": "janitor_phase", "outcome": "started"}
+{"timestamp": "2026-03-07T22:41:53.372587+00:00", "agent": "Orchestrator", "action": "janitor_phase", "outcome": "no_new_raw_data", "detail": {"files_processed": 0, "files_failed": 0, "message": "No new raw files in data/raw (all data already processed or folder empty)."}}
+{"timestamp": "2026-03-07T22:41:53.372803+00:00", "agent": "Orchestrator", "action": "analyst_phase", "outcome": "started"}
+{"timestamp": "2026-03-07T22:41:53.374906+00:00", "agent": "Orchestrator", "action": "analyst_phase", "outcome": "success", "detail": {"hotspots_detected": 4}}
+{"timestamp": "2026-03-07T22:41:53.375128+00:00", "agent": "Orchestrator", "action": "observer_phase", "outcome": "started", "detail": {"hotspots_detected": 4}}
+{"timestamp": "2026-03-07T22:41:56.006493+00:00", "agent": "Orchestrator", "action": "observer_phase", "outcome": "success", "detail": {"locations": 4}}
+{"timestamp": "2026-03-07T22:41:56.007133+00:00", "agent": "Orchestrator", "action": "write_priority_roadmap", "outcome": "success", "detail": {"file": "cityblitz_priority_roadmap.json"}}
+{"timestamp": "2026-03-07T22:41:56.007280+00:00", "agent": "Orchestrator", "action": "impact_phase", "outcome": "started"}
+{"timestamp": "2026-03-07T22:41:56.027592+00:00", "agent": "Orchestrator", "action": "impact_phase", "outcome": "success", "detail": {"target_location": "Received_311_Service_Request", "projected_calls_avoided_mid": 15, "estimated_emergency_cost_savings": 12000.0}}
+{"timestamp": "2026-03-07T22:41:56.027876+00:00", "agent": "Orchestrator", "action": "run_cascade", "outcome": "completed", "detail": {"red_zone": {"location": "Received_311_Service_Request", "vibe_score": 0.25, "friction_score": 1.0, "priority": "Priority Alpha"}, "impact": {"target_location": "Received_311_Service_Request"}}}
+{"timestamp": "2026-03-07T22:41:57.235620+00:00", "agent": "Orchestrator", "action": "observer_phase", "outcome": "success", "detail": {"locations": 4}}
+{"timestamp": "2026-03-07T22:41:57.236286+00:00", "agent": "Orchestrator", "action": "write_priority_roadmap", "outcome": "success", "detail": {"file": "cityblitz_priority_roadmap.json"}}
+{"timestamp": "2026-03-07T22:41:57.236476+00:00", "agent": "Orchestrator", "action": "impact_phase", "outcome": "started"}
+{"timestamp": "2026-03-07T22:41:57.251222+00:00", "agent": "Orchestrator", "action": "impact_phase", "outcome": "success", "detail": {"target_location": "Received_311_Service_Request", "projected_calls_avoided_mid": 15, "estimated_emergency_cost_savings": 12000.0}}
+{"timestamp": "2026-03-07T22:41:57.251480+00:00", "agent": "Orchestrator", "action": "run_cascade", "outcome": "completed", "detail": {"red_zone": {"location": "Received_311_Service_Request", "vibe_score": 0.25, "friction_score": 1.0, "priority": "Priority Alpha"}, "impact": {"target_location": "Received_311_Service_Request"}}}

@@ -1,0 +1,34 @@
+{
+  "timestamp": "2026-03-07T22:41:53.373755+00:00",
+  "agent": "Analyst",
+  "hotspots": [
+    {
+      "zip_code": "911_Calls",
+      "friction_score": 0.97,
+      "meta": {
+        "source_file": "911_Calls.csv"
+      }
+    },
+    {
+      "zip_code": "Received_311_Service_Request",
+      "friction_score": 1.0,
+      "meta": {
+        "source_file": "Received_311_Service_Request.csv"
+      }
+    },
+    {
+      "zip_code": "Business_License",
+      "friction_score": 1.0,
+      "meta": {
+        "source_file": "Business_License.csv"
+      }
+    },
+    {
+      "zip_code": "City of Montgomery - Open Data Portal",
+      "friction_score": 1.0,
+      "meta": {
+        "source_file": "City of Montgomery - Open Data Portal.csv"
+      }
+    }
+  ]
+}

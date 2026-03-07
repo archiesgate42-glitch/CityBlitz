@@ -1,0 +1,6 @@
+Always follow 'Industrial Grade' coding standards:
+1. Strict Type Hinting in Python.
+2. Every agent action must be logged in /logs.
+3. No agent is allowed to write directly to data/raw.
+4. Data integrity is priority #1.
+5. Use asynchronous calls where possible to simulate parallel agents.

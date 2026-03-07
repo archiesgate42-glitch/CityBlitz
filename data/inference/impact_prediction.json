@@ -1,0 +1,31 @@
+{
+  "timestamp": "2026-03-07T22:41:57.250165+00:00",
+  "agent": "Impact",
+  "job": "Phase 3: IMPROVE \u2013 Impact Projection",
+  "target_location": "Received_311_Service_Request",
+  "priority": "Priority Alpha",
+  "friction_score": 1.0,
+  "vibe_score": 0.25,
+  "roi_assumptions": {
+    "reduction_range": [
+      0.15,
+      0.2
+    ],
+    "cost_per_call": 800.0,
+    "theory": "Broken Windows \u2013 resolving visible disorder reduces 911 non-medical calls."
+  },
+  "baseline": {
+    "total_911_calls": 85,
+    "zone_911_calls": 85,
+    "safety_911_calls_in_zone": 85,
+    "zone_share_of_city_calls": 1.0
+  },
+  "projection": {
+    "projected_calls_avoided_low": 13,
+    "projected_calls_avoided_mid": 15,
+    "projected_calls_avoided_high": 17,
+    "projected_lives_impacted": 15,
+    "estimated_emergency_cost_savings": 12000.0,
+    "vitality_recovery_percent": 35.0
+  }
+}
