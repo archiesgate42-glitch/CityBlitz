@@ -1,6 +1,22 @@
+# Python Environment
 .venv/
+venv/
+env/
 __pycache__/
-*.pyc
-.env
-.streamlit/
+*.py[cod]
 
+# Industrial Silos (Keep structure, ignore content)
+data/raw/*
+!data/raw/.gitkeep
+data/processed/*
+!data/processed/.gitkeep
+data/inference/*
+!data/inference/.gitkeep
+
+# Logs & Credentials
+logs/*.log
+logs/*.json
+.env
+
+# System Files
+.DS_Store
