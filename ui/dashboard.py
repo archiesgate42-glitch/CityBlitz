@@ -289,7 +289,7 @@ def _render_pulse_gauge(roadmap: Optional[Dict[str, Any]]) -> None:
                 legend=None,
             ),
         )
-        .properties(height=140, title=alt.TitleParams(text="Vitality Gauge – Central Eye", fontSize=18))
+        .properties(height=140, title=alt.TitleParams(text="Vitality Radar (Vibe vs. Friction)", fontSize=18))
     )
     # Reference rule at 0.4 (Priority Alpha threshold)
     rule = (
@@ -354,13 +354,18 @@ def main() -> None:
 
     bridge = DataBridge()
 
-    # Global dark / MI6-style theme
+    # Global dark / MI6-style theme + stage box borders
     st.markdown(
         """
         <style>
-        .stApp {
-            background-color: #020617;
-            color: #e5e7eb;
+        .stApp { background-color: #020617; color: #e5e7eb; }
+        div[data-testid="stVerticalBlock"] > div { border-radius: 0.5rem; }
+        /* Workspace borders for stage columns */
+        div[data-testid="column"] {
+            border: 1px solid #334155;
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            background: rgba(15, 23, 42, 0.4);
         }
         </style>
         """,
@@ -380,107 +385,139 @@ def main() -> None:
         ">
             <h1 style="margin: 0; font-size: 1.8rem;">BioNairi | CityBlitz – Tactical MI6 Deck</h1>
             <p style="margin: 0.25rem 0 0; font-size: 0.9rem; opacity: 0.8;">
-                Phase 1: <strong>BROKEN</strong> · City of Montgomery · 30-second decision view
+                City of Montgomery · Janitor → Analyst → Observer → Impact
             </p>
         </div>
         """,
         unsafe_allow_html=True,
     )
 
-    # Load data once for High-Impact section
+    # Load data
     roadmap = _load_priority_roadmap(bridge)
     impact = _load_impact_prediction(bridge)
 
-    # ---- High-Impact Visual (first 5 seconds) ----
-    st.markdown("---")
-    g1, g2, g3 = st.columns([1, 2, 1])
-    with g2:
-        st.markdown("##### Central Eye – Vitality Gauge")
-        _render_pulse_gauge(roadmap)
-
-    # High-impact metrics row
-    if roadmap and roadmap.get("red_zone"):
-        rz = roadmap["red_zone"]
-        friction_val = rz.get("friction_score", "?")
-        vibe_val = rz.get("vibe_score", "?")
-    else:
-        friction_val = "?"
-        vibe_val = "?"
-
-    m_left, m_center, m_right = st.columns([1.2, 1.6, 1.2])
-    with m_left:
-        st.markdown(
-            f'<p style="font-size: 1.4rem; margin: 0; color: #ef4444;">FRICTION</p>'
-            f'<p style="font-size: 2.0rem; margin: 0; font-weight: 700; color: #fecaca;">{friction_val}</p>',
-            unsafe_allow_html=True,
-        )
-    with m_center:
-        _render_critical_delta(impact)
-    with m_right:
-        st.markdown(
-            f'<p style="font-size: 1.4rem; margin: 0; color: #38bdf8;">VIBE</p>'
-            f'<p style="font-size: 2.0rem; margin: 0; font-weight: 700; color: #bfdbfe;">{vibe_val}</p>',
-            unsafe_allow_html=True,
-        )
-
-    # Priority Alpha target card beneath metrics
-    st.markdown("")
-    st.markdown("##### Priority Alpha Target")
-    _render_priority_alpha_map_or_card(roadmap, impact)
-
-    st.markdown("---")
-
-    # Determine if impact_prediction.json exists (Phase 1 completed) to unlock Global Sweep
-    impact_snapshot = _load_impact_prediction(bridge)
-    impact_available = impact_snapshot is not None
+    # Run Cascade & Global Sweep (prominent at top)
+    impact_available = impact is not None
     if "global_sweep_unlocked" not in st.session_state:
         st.session_state["global_sweep_unlocked"] = impact_available
     elif impact_available:
         st.session_state["global_sweep_unlocked"] = True
 
-    col_left, col_right = st.columns([3, 1])
-    with col_left:
-        st.markdown("### Cascade Control")
-        if st.button("Run Cascade", type="primary", use_container_width=False):
-            with st.spinner("Executing Janitor → Analyst → Observer cascade..."):
+    ctrl_col, _ = st.columns([2, 1])
+    with ctrl_col:
+        if st.button("Run Cascade", type="primary", use_container_width=True):
+            with st.spinner("Executing Janitor → Analyst → Observer → Impact cascade..."):
                 orchestrator = OrchestratorAgent(bridge)
                 try:
-                    result = orchestrator.run_cascade()
-                    st.success("Cascade completed. Priority roadmap updated.")
+                    orchestrator.run_cascade()
+                    st.success("Cascade completed. All stages updated.")
+                    roadmap = _load_priority_roadmap(bridge)
+                    impact = _load_impact_prediction(bridge)
                 except Exception as exc:
                     st.error(f"Cascade failed: {exc}")
 
-        st.markdown("### Global Sweep")
+    sweep_col1, sweep_col2 = st.columns(2)
+    with sweep_col1:
         sweep_disabled = not st.session_state.get("global_sweep_unlocked", False)
-        if st.button("INITIATE FULL CITY SCAN", disabled=sweep_disabled):
-            if sweep_disabled:
-                st.info("Full city scan will unlock after the first successful cascade.")
-            else:
+        if st.button("INITIATE FULL CITY SCAN", disabled=sweep_disabled, use_container_width=True):
+            if not sweep_disabled:
                 with st.spinner("Initiating full city scan across Montgomery datasets..."):
                     try:
                         summary = run_global_scout(bridge, max_items=10)
-                        st.success(
-                            f"Full city scan completed. "
-                            f"Discovered {summary['discovered_count']} datasets, "
-                            f"downloaded {summary['downloaded_count']} into data/raw."
-                        )
+                        st.success(f"Discovered {summary['discovered_count']} datasets, downloaded {summary['downloaded_count']}.")
                     except Exception as exc:
                         st.error(f"Full city scan failed: {exc}")
+    with sweep_col2:
         if sweep_disabled:
-            st.caption("Locked until Phase 1 (BROKEN) has produced an impact_prediction.json.")
+            st.caption("Locked until impact_prediction.json exists.")
 
-    with col_right:
-        st.markdown("### Snapshot")
-        if roadmap and roadmap.get("red_zone"):
-            rz = roadmap["red_zone"]
-            st.metric("Current #1 Red‑Zone", rz.get("location", "N/A"))
-            st.metric("Vibe / Friction", f"{rz.get('vibe_score', '?')} / {rz.get('friction_score', '?')}")
-        else:
-            st.caption("No roadmap yet.")
+    st.markdown("---")
 
-    # Reload after potential cascade
-    roadmap = _load_priority_roadmap(bridge)
-    impact = _load_impact_prediction(bridge)
+    # ---- 3-column modular grid ----
+    col1, col2, col3 = st.columns(3)
+    orchestrator_events = _load_orchestrator_log(bridge)
+    janitor_status = _load_janitor_status(bridge)
+    janitor_ev = _extract_phase_status(orchestrator_events, "janitor_phase")
+    analyst_ev = _extract_phase_status(orchestrator_events, "analyst_phase")
+    observer_ev = _extract_phase_status(orchestrator_events, "observer_phase")
+    hotspot_count = 0
+    if analyst_ev and analyst_ev.get("detail"):
+        hotspot_count = analyst_ev["detail"].get("hotspots_detected") or analyst_ev["detail"].get("count") or 0
+    processed = janitor_status.get("files_processed", 0) if janitor_status else 0
+
+    # COLUMN 1: STAGE 1 – THE AUDIT (BROKEN)
+    with col1:
+        with st.container():
+            st.markdown(
+                '<div style="border: 1px solid #ef4444; border-radius: 0.5rem; padding: 0.75rem 1rem; margin-bottom: 0.75rem; background: rgba(30,0,0,0.3);">'
+                '<p style="margin:0; font-size:0.95rem; font-weight:700; color:#fca5a5;">STAGE 1: THE AUDIT (BROKEN)</p>'
+                '</div>',
+                unsafe_allow_html=True,
+            )
+            st.markdown("**Janitor – Data Sanitation**")
+            st.metric("Status", _status_label(janitor_ev.get("outcome") if janitor_ev else None))
+            if janitor_status:
+                st.caption(f"Files processed: {janitor_status.get('files_processed', '?')} · Failed: {janitor_status.get('files_failed', '?')}")
+            st.markdown("**Analyst – Friction Detection**")
+            st.metric("Status", _status_label(analyst_ev.get("outcome") if analyst_ev else None))
+            st.caption(f"Hotspots detected: {hotspot_count}")
+            st.markdown(
+                f'<div style="border: 1px solid #38bdf8; border-radius: 0.5rem; padding: 0.75rem; margin-top: 0.5rem; background: rgba(0,30,60,0.2);">'
+                f'<p style="margin:0; font-size:0.8rem; color:#94a3b8;">Metric Card</p>'
+                f'<p style="margin:0.25rem 0 0; font-size:1.2rem; font-weight:700; color:#bfdbfe;">{processed} files · {hotspot_count} hotspots</p>'
+                f'</div>',
+                unsafe_allow_html=True,
+            )
+
+    # COLUMN 2: STAGE 2 – THE STRATEGY (MOVES)
+    with col2:
+        with st.container():
+            st.markdown(
+                '<div style="border: 1px solid #38bdf8; border-radius: 0.5rem; padding: 0.75rem 1rem; margin-bottom: 0.75rem; background: rgba(0,30,60,0.3);">'
+                '<p style="margin:0; font-size:0.95rem; font-weight:700; color:#93c5fd;">STAGE 2: THE STRATEGY (MOVES)</p>'
+                '</div>',
+                unsafe_allow_html=True,
+            )
+            st.markdown("**Observer – Vibe Scan (Bright Data)**")
+            st.metric("Status", _status_label(observer_ev.get("outcome") if observer_ev else None))
+            _render_pulse_gauge(roadmap)
+            verdict = (roadmap or {}).get("command_verdict", "No verdict yet.")
+            st.markdown(
+                f'<div style="border: 2px solid #38bdf8; border-radius: 0.5rem; padding: 1rem; margin-top: 0.5rem; background: linear-gradient(135deg,#0f172a,#1e293b);">'
+                f'<p style="margin:0; font-size:0.75rem; color:#64748b; letter-spacing:0.05em;">COMMAND VERDICT</p>'
+                f'<p style="margin:0.35rem 0 0; font-size:1rem; font-weight:700; color:#e2e8f0;">{verdict}</p>'
+                f'</div>',
+                unsafe_allow_html=True,
+            )
+
+    # COLUMN 3: STAGE 3 – THE PROJECTION (IMPROVE)
+    with col3:
+        with st.container():
+            st.markdown(
+                '<div style="border: 1px solid #22c55e; border-radius: 0.5rem; padding: 0.75rem 1rem; margin-bottom: 0.75rem; background: rgba(0,40,20,0.3);">'
+                '<p style="margin:0; font-size:0.95rem; font-weight:700; color:#86efac;">STAGE 3: THE PROJECTION (IMPROVE)</p>'
+                '</div>',
+                unsafe_allow_html=True,
+            )
+            st.markdown("**Impact Agent**")
+            if impact and "projection" in impact:
+                proj = impact["projection"]
+                savings = int(proj.get("estimated_emergency_cost_savings", 0))
+                calls_avoided = int(proj.get("projected_calls_avoided_mid", 0))
+                vitality_pct = float(proj.get("vitality_recovery_percent", 0))
+                st.markdown(
+                    f'<p style="font-size:1.6rem; font-weight:700; color:#ef4444; margin:0;">Safety ROI: ${savings:,}</p>',
+                    unsafe_allow_html=True,
+                )
+                st.caption("Estimated emergency cost savings")
+                st.markdown(
+                    f'<p style="font-size:1.2rem; font-weight:700; color:#38bdf8; margin:0.5rem 0 0;">Projected Calls Avoided: {calls_avoided}</p>',
+                    unsafe_allow_html=True,
+                )
+                st.progress(min(vitality_pct / 100.0, 1.0))
+                st.caption(f"Vitality Recovery: {vitality_pct}%")
+            else:
+                st.info("Run cascade to see Impact projections.")
 
     # ---- Industrial Audit (technical details behind expander) ----
     with st.expander("Industrial Audit", expanded=False):
