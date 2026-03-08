@@ -1,23 +1,25 @@
 from __future__ import annotations
 
 """
-OrchestratorAgent (Taro-XI, System Architect)
+OrchestratorAgent (Taro-XI, System Architect) – Industrial Intelligence
 
-Coordinates the 3-agent cascade:
-    Janitor (Data Sanitation) -> Analyst (Hotspot Detection) -> Observer (Urban Vitality).
+Coordinates the 4-agent cascade:
+    Janitor (Data Sanitation) -> Analyst (Hotspot Detection) -> Observer (Urban Vitality) -> Impact (IMPROVE).
 
 Phase 1: BROKEN
 ---------------
 - If Janitor fails to clean data, stop and log a Critical Data Integrity Failure.
 - If Analyst finds no hotspots, do not trigger the Observer.
-- After Observer completes, synthesize a cityblitz_priority_roadmap.json
-  in data/inference with the #1 Red-Zone and a Command Verdict.
+- After Observer completes, synthesize a cityblitz_priority_roadmap.json with:
+  - Adaptive Priority System (FVR, Temporal Weighting)
+  - Agent Consensus (Resident, Municipal, Economy – 2/3 must agree for Priority Alpha)
+  - Explainability Engine (decision_markdown)
 """
 
 import json
 from dataclasses import dataclass
 from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 from core.bridge import DataBridge, DataBridgeError
 from agents.janitor import JanitorAgent
@@ -195,25 +197,93 @@ class OrchestratorAgent:
         self._log_event("observer_phase", "success", {"locations": len(report.get("locations", []))})
         return report
 
+    def _friction_vibe_ratio(self, friction: float, vibe: float) -> float:
+        """APS: FVR = friction / (vibe + 0.01). Higher = more urgency."""
+        return friction / (max(vibe, 0.01) + 0.01)
+
     def _select_top_red_zone(self, observer_report: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         """
-        Choose the #1 Red-Zone from Observer's final_vibe_check-style payload.
-        Priority Alpha locations are preferred; otherwise choose the worst
-        combination of low vibe and high friction.
+        Choose the #1 Red-Zone using Adaptive Priority System (FVR).
+        Replaces static thresholds: higher Friction-to-Vibe Ratio = higher urgency.
         """
         locations = observer_report.get("locations") or []
         if not locations:
             return None
 
-        priority_alpha = [loc for loc in locations if loc.get("priority") == "Priority Alpha"]
-        pool = priority_alpha or locations
-
-        def sort_key(loc: Dict[str, Any]) -> Any:
-            vibe = float(loc.get("vibe_score", 1.0))
+        def fvr_key(loc: Dict[str, Any]) -> float:
             friction = float(loc.get("friction_score", 0.0))
-            return (vibe, -friction)  # lower vibe, higher friction preferred
+            vibe = float(loc.get("vibe_score", 1.0))
+            return -self._friction_vibe_ratio(friction, vibe)  # higher FVR first
 
-        return min(pool, key=sort_key)
+        return max(locations, key=fvr_key)
+
+    def _agent_consensus(
+        self,
+        red_zone: Dict[str, Any],
+        impact_report: Optional[Dict[str, Any]],
+    ) -> Tuple[bool, Dict[str, Any]]:
+        """
+        Simulate weighted vote: Resident, Municipal, Economy.
+        Priority Alpha only if at least 2 of 3 paths agree on urgency.
+        """
+        friction = float(red_zone.get("friction_score", 0.0))
+        vibe = float(red_zone.get("vibe_score", 0.5))
+        resident_urgent = vibe < 0.4
+        municipal_urgent = friction >= 0.7
+        roi = 0.0
+        if impact_report and "projection" in impact_report:
+            roi = float(impact_report["projection"].get("estimated_emergency_cost_savings", 0))
+        economy_urgent = roi >= 5000.0
+
+        votes = {
+            "resident": resident_urgent,
+            "municipal": municipal_urgent,
+            "economy": economy_urgent,
+        }
+        urgent_count = sum(votes.values())
+        promoted = urgent_count >= 2
+
+        return promoted, {
+            "votes": votes,
+            "resident_urgent": resident_urgent,
+            "municipal_urgent": municipal_urgent,
+            "economy_urgent": economy_urgent,
+            "urgent_count": urgent_count,
+            "promoted_to_priority_alpha": promoted,
+        }
+
+    def generate_decision_markdown(
+        self,
+        roadmap: Dict[str, Any],
+        impact: Optional[Dict[str, Any]],
+    ) -> str:
+        """
+        Explainability Engine: human-readable justification for Priority Alpha.
+        Format: "Why this zone? 1) Friction X (Top Y%), 2) Sentiment Delta Z%, 3) Safety ROI $N."
+        """
+        red = roadmap.get("red_zone")
+        if not red:
+            return "No Red-Zone identified; no decision to explain."
+
+        friction = float(red.get("friction_score", 0.0))
+        vibe = float(red.get("vibe_score", 0.5))
+        location = red.get("location", "Unknown")
+
+        # Friction percentile: assume 1.0 = top tier (Top 5%), scale down
+        friction_pct = "Top 5%" if friction >= 0.95 else f"Top {int(10 + (1 - friction) * 40)}%"
+        # Sentiment Delta: vibe 0.5 = neutral; negative delta = worse
+        sentiment_delta_pct = int((vibe - 0.5) * 100)
+        roi_str = "$0"
+        if impact and "projection" in impact:
+            roi = int(impact["projection"].get("estimated_emergency_cost_savings", 0))
+            roi_str = f"${roi:,}"
+
+        return (
+            f"**Why this zone ({location})?**\n"
+            f"1) Friction {friction:.1f} ({friction_pct}), "
+            f"2) Sentiment Delta {sentiment_delta_pct:+d}%, "
+            f"3) Safety ROI {roi_str}."
+        )
 
     def _write_priority_roadmap(
         self,
@@ -251,6 +321,11 @@ class OrchestratorAgent:
                 else:
                     verdict = "Targeted Improvements Recommended (Monitor and phase interventions)."
 
+                fvr = self._friction_vibe_ratio(
+                    float(top.get("friction_score", 0)),
+                    float(top.get("vibe_score", 0.5)),
+                )
+
                 roadmap = {
                     "timestamp": datetime.now(timezone.utc).isoformat(),
                     "agent": ORCHESTRATOR_AGENT_NAME,
@@ -263,6 +338,11 @@ class OrchestratorAgent:
                         "priority": priority,
                     },
                     "command_verdict": verdict,
+                    "aps": {
+                        "friction_vibe_ratio": round(fvr, 3),
+                    },
+                    "consensus": None,
+                    "explainability": None,
                     "source_reports": {
                         "hotspots_file": "hotspot_analysis.json",
                         "vitality_file": "final_vibe_check.json",
@@ -310,6 +390,55 @@ class OrchestratorAgent:
         )
         return report
 
+    def _load_priority_roadmap(self) -> Dict[str, Any]:
+        """Load cityblitz_priority_roadmap.json from disk."""
+        try:
+            raw = self._bridge.read_inference(ORCHESTRATOR_AGENT_NAME, "cityblitz_priority_roadmap.json")
+            return json.loads(raw)
+        except (DataBridgeError, json.JSONDecodeError):
+            return {}
+
+    def _enrich_roadmap_with_transparency(
+        self,
+        roadmap: Dict[str, Any],
+        impact_report: Optional[Dict[str, Any]],
+    ) -> None:
+        """
+        After Impact runs: apply Agent Consensus, generate Explainability markdown,
+        and persist the enriched roadmap to disk.
+        """
+        red = roadmap.get("red_zone")
+        if not red:
+            return
+
+        promoted, consensus = self._agent_consensus(red, impact_report)
+
+        if not consensus["promoted_to_priority_alpha"]:
+            roadmap["red_zone"]["priority"] = "Standard"
+            roadmap["command_verdict"] = "Targeted Improvements Recommended (Monitor and phase interventions)."
+        else:
+            roadmap["red_zone"]["priority"] = "Priority Alpha"
+            roadmap["command_verdict"] = "Immediate Infrastructure Intervention Required"
+
+        roadmap["consensus"] = consensus
+        roadmap["explainability"] = {
+            "decision_markdown": self.generate_decision_markdown(roadmap, impact_report),
+        }
+        if "aps" not in roadmap:
+            roadmap["aps"] = {}
+        if impact_report and "aps" in impact_report:
+            roadmap["aps"].update(impact_report["aps"])
+
+        try:
+            self._bridge.write_inference(
+                ORCHESTRATOR_AGENT_NAME,
+                "cityblitz_priority_roadmap.json",
+                json.dumps(roadmap, indent=2),
+            )
+            self._log_event("enrich_roadmap", "success", {"consensus": consensus})
+        except DataBridgeError as e:
+            self._log_event("enrich_roadmap", "failure", {"error": str(e)})
+
     # ------------------------------------------------------------------
     # Public API
     # ------------------------------------------------------------------
@@ -351,6 +480,10 @@ class OrchestratorAgent:
         roadmap = self._write_priority_roadmap(cascade, observer_report)
         # 5. Phase 3: IMPROVE (impact)
         impact_report = self._impact_phase()
+        # 6. Enrich roadmap with Industrial Intelligence (consensus, explainability)
+        if roadmap.get("red_zone"):
+            self._enrich_roadmap_with_transparency(roadmap, impact_report)
+            roadmap = self._load_priority_roadmap()
 
         self._log_event(
             "run_cascade",

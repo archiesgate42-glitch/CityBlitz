@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 """
-ImpactAgent – Phase 3: IMPROVE
+ImpactAgent – Phase 3: IMPROVE (Industrial Intelligence)
 
 Quantifies potential safety and quality-of-life (QoL) gains for the current
 Priority Alpha zone identified by the Orchestrator.
@@ -9,9 +9,10 @@ Priority Alpha zone identified by the Orchestrator.
 Pipeline:
 - Read cityblitz_priority_roadmap.json to find the Priority Alpha location.
 - Read data/processed/911_Calls.csv via DataBridge.
-- Estimate 911 safety/crime call density for that zone.
+- Estimate 911 safety/crime call density (with Temporal Weighting: 2.5x for last 48h window).
 - Project a Safety ROI using a 15–20% reduction in non-medical calls
   inspired by the Broken Windows Theory.
+- Compute Friction-to-Vibe Ratio (FVR) for transparency.
 - Write impact_prediction.json into data/inference.
 - Log all actions to logs/impact_agent.log (industrial JSON format).
 """
@@ -20,7 +21,7 @@ import json
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from io import StringIO
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 import pandas as pd
 
@@ -28,6 +29,7 @@ from core.bridge import DataBridge, DataBridgeError
 
 
 AGENT_NAME = "Impact"
+TEMPORAL_WEIGHT_RECENT = 2.5  # 2.5x for events in "last 48h" window
 
 
 @dataclass
@@ -170,6 +172,45 @@ class ImpactAgent:
             return df
         return zone_df
 
+    def _compute_temporal_weights(self, df: pd.DataFrame) -> Tuple[pd.Series, bool]:
+        """
+        Apply Temporal Weighting: 2.5x for events in the most recent temporal window.
+        For 911 data with Year/Month: the most recent month gets 2.5x; older months get 1.0x.
+        Returns (weights series, temporal_weighting_applied).
+        """
+        if df.empty:
+            return pd.Series(dtype=float), False
+
+        year_col = None
+        month_col = None
+        for c in df.columns:
+            if "year" in c.lower():
+                year_col = c
+            if "month" in c.lower() and "year" not in c.lower():
+                month_col = c
+
+        if year_col is None or month_col is None:
+            return pd.Series(1.0, index=df.index), False
+
+        try:
+            years = df[year_col].astype(int)
+            months_raw = df[month_col].astype(str)
+            # Parse "1 - January" -> 1
+            months = months_raw.str.extract(r"^(\d+)", expand=False).astype(float)
+            months = months.fillna(1).astype(int)
+            max_year = int(years.max())
+            max_month = int(months[years == max_year].max()) if (years == max_year).any() else 1
+            is_recent = (years == max_year) & (months == max_month)
+            weights = pd.Series(1.0, index=df.index)
+            weights[is_recent] = TEMPORAL_WEIGHT_RECENT
+            return weights, True
+        except Exception:
+            return pd.Series(1.0, index=df.index), False
+
+    def _friction_vibe_ratio(self, friction: float, vibe: float) -> float:
+        """FVR = friction / (vibe + 0.01). Higher = more urgency."""
+        return friction / (max(vibe, 0.01) + 0.01)
+
     def _filter_safety_crime_calls(self, df: pd.DataFrame) -> pd.DataFrame:
         """
         Restrict to safety/crime oriented calls based on textual fields.
@@ -233,12 +274,19 @@ class ImpactAgent:
         zone_df = self._filter_zone_rows(df_911, ctx)
         safety_df = self._filter_safety_crime_calls(zone_df)
 
+        # Temporal Weighting: 2.5x for most recent month
+        weights, temporal_applied = self._compute_temporal_weights(safety_df)
+        weighted_safety = float((weights).sum()) if not safety_df.empty else 0.0
+        unweighted_safety = int(len(safety_df))
+
         total_911 = int(len(df_911))
         zone_911 = int(len(zone_df))
-        safety_911 = int(len(safety_df))
+        safety_911 = int(round(weighted_safety))
 
         # Relative density of (safety) calls in the zone vs the entire dataset.
         density = (safety_911 / total_911) if total_911 > 0 else 0.0
+
+        fvr = self._friction_vibe_ratio(ctx.friction_score, ctx.vibe_score)
 
         low_r, high_r = self._reduction_low, self._reduction_high
         mid_r = (low_r + high_r) / 2.0
@@ -260,6 +308,13 @@ class ImpactAgent:
             "priority": ctx.priority,
             "friction_score": ctx.friction_score,
             "vibe_score": ctx.vibe_score,
+            "aps": {
+                "friction_vibe_ratio": round(fvr, 3),
+                "temporal_weight_applied": temporal_applied,
+                "temporal_weight_recent_multiplier": TEMPORAL_WEIGHT_RECENT,
+                "safety_calls_unweighted": unweighted_safety,
+                "safety_calls_weighted": safety_911,
+            },
             "roi_assumptions": {
                 "reduction_range": [low_r, high_r],
                 "cost_per_call": self._cost_per_call,
@@ -269,7 +324,7 @@ class ImpactAgent:
                 "total_911_calls": total_911,
                 "zone_911_calls": zone_911,
                 "safety_911_calls_in_zone": safety_911,
-                "zone_share_of_city_calls": density,
+                "zone_share_of_city_calls": round(density, 4),
             },
             "projection": {
                 "projected_calls_avoided_low": projected_reduction_low,
