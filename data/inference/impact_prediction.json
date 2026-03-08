@@ -1,11 +1,18 @@
 {
-  "timestamp": "2026-03-07T22:41:57.250165+00:00",
+  "timestamp": "2026-03-08T00:24:46.239684+00:00",
   "agent": "Impact",
   "job": "Phase 3: IMPROVE \u2013 Impact Projection",
-  "target_location": "Received_311_Service_Request",
+  "target_location": "911_Calls",
   "priority": "Priority Alpha",
-  "friction_score": 1.0,
+  "friction_score": 0.97,
   "vibe_score": 0.25,
+  "aps": {
+    "friction_vibe_ratio": 3.731,
+    "temporal_weight_applied": true,
+    "temporal_weight_recent_multiplier": 2.5,
+    "safety_calls_unweighted": 85,
+    "safety_calls_weighted": 104
+  },
   "roi_assumptions": {
     "reduction_range": [
       0.15,
@@ -17,15 +24,15 @@
   "baseline": {
     "total_911_calls": 85,
     "zone_911_calls": 85,
-    "safety_911_calls_in_zone": 85,
-    "zone_share_of_city_calls": 1.0
+    "safety_911_calls_in_zone": 104,
+    "zone_share_of_city_calls": 1.2235
   },
   "projection": {
-    "projected_calls_avoided_low": 13,
-    "projected_calls_avoided_mid": 15,
-    "projected_calls_avoided_high": 17,
-    "projected_lives_impacted": 15,
-    "estimated_emergency_cost_savings": 12000.0,
-    "vitality_recovery_percent": 35.0
+    "projected_calls_avoided_low": 16,
+    "projected_calls_avoided_mid": 18,
+    "projected_calls_avoided_high": 21,
+    "projected_lives_impacted": 18,
+    "estimated_emergency_cost_savings": 14400.0,
+    "vitality_recovery_percent": 42.8
   }
 }
