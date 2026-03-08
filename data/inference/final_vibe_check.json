@@ -1,61 +1,8 @@
 {
-  "timestamp": "2026-03-08T00:24:46.225574+00:00",
+  "timestamp": "2026-03-08T01:00:41.920189+00:00",
   "agent": "Observer",
   "job": "Urban Vitality Report",
   "source_file": "hotspot_analysis.json",
   "hotspots_considered": 4,
-  "locations": [
-    {
-      "location": "911_Calls",
-      "vibe_score": 0.25,
-      "friction_score": 0.97,
-      "priority": "Priority Alpha",
-      "raw_hotspot": {
-        "zip_code": "911_Calls",
-        "friction_score": 0.97,
-        "meta": {
-          "source_file": "911_Calls.csv"
-        }
-      }
-    },
-    {
-      "location": "Received_311_Service_Request",
-      "vibe_score": 0.25,
-      "friction_score": 1.0,
-      "priority": "Priority Alpha",
-      "raw_hotspot": {
-        "zip_code": "Received_311_Service_Request",
-        "friction_score": 1.0,
-        "meta": {
-          "source_file": "Received_311_Service_Request.csv"
-        }
-      }
-    },
-    {
-      "location": "Business_License",
-      "vibe_score": 0.25,
-      "friction_score": 1.0,
-      "priority": "Priority Alpha",
-      "raw_hotspot": {
-        "zip_code": "Business_License",
-        "friction_score": 1.0,
-        "meta": {
-          "source_file": "Business_License.csv"
-        }
-      }
-    },
-    {
-      "location": "City of Montgomery - Open Data Portal",
-      "vibe_score": 0.25,
-      "friction_score": 1.0,
-      "priority": "Priority Alpha",
-      "raw_hotspot": {
-        "zip_code": "City of Montgomery - Open Data Portal",
-        "friction_score": 1.0,
-        "meta": {
-          "source_file": "City of Montgomery - Open Data Portal.csv"
-        }
-      }
-    }
-  ]
+  "locations": []
 }

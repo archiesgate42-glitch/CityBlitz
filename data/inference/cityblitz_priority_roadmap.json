@@ -1,39 +1,8 @@
 {
-  "timestamp": "2026-03-08T00:24:46.226449+00:00",
+  "timestamp": "2026-03-08T01:00:41.921153+00:00",
   "agent": "Orchestrator",
   "phase": "Phase 1: BROKEN",
-  "status": "Cascade completed.",
-  "red_zone": {
-    "location": "911_Calls",
-    "vibe_score": 0.25,
-    "friction_score": 0.97,
-    "priority": "Priority Alpha"
-  },
-  "command_verdict": "Immediate Infrastructure Intervention Required",
-  "aps": {
-    "friction_vibe_ratio": 3.731,
-    "temporal_weight_applied": true,
-    "temporal_weight_recent_multiplier": 2.5,
-    "safety_calls_unweighted": 85,
-    "safety_calls_weighted": 104
-  },
-  "consensus": {
-    "votes": {
-      "resident": true,
-      "municipal": true,
-      "economy": true
-    },
-    "resident_urgent": true,
-    "municipal_urgent": true,
-    "economy_urgent": true,
-    "urgent_count": 3,
-    "promoted_to_priority_alpha": true
-  },
-  "explainability": {
-    "decision_markdown": "**Why this zone (911_Calls)?**\n1) Friction 1.0 (Top 5%), 2) Sentiment Delta -25%, 3) Safety ROI $14,400."
-  },
-  "source_reports": {
-    "hotspots_file": "hotspot_analysis.json",
-    "vitality_file": "final_vibe_check.json"
-  }
+  "status": "Observer executed but returned no locations.",
+  "red_zone": null,
+  "command_verdict": "No clear red\u2011zone identified; monitor trends."
 }
