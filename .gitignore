@@ -28,3 +28,5 @@ app_icon_prompt.md
 rapport*.md
 testrunrapport.md
 DataBridge.py
+Guide.md
+tests/verify_bright_data.py

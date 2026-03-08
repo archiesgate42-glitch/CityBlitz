@@ -48,7 +48,7 @@ CityBlitz is niet zomaar een mockup. Het is ontworpen op basis van echte, schaal
 
 ### 4. Techniek ⚙️
 - **Google Antigravity:** Complexe Flutter state-management en UI generatie.
-- **Bright Data:** Web-sentiment scraping gecombineerd met open stadsdata.
+- **Bright Data:** Web-sentiment scraping gecombineerd met open stadsdata via de **Crawl API v3 (direct requests)** voor maximale betrouwbaarheid en snelheid.
 - **Taro-XI Engine:** Een multi-agent consensus logica (Python backend) die gevoed wordt door Riverpod streams naar een frontend dashboard.
 
 ---
@@ -59,7 +59,8 @@ De lokale Multi-Agent "Lab Setup" van de **BioNairi CityBlitz**-applicatie is li
 **Hoe het werkt:**
 - De infrastructuur draait in een gecontaineriseerde Web Service (Python 3.11).
 - Een **FastAPI/Flask Orchestration Wrapper** (`main_render.py`) ontsluit de backend via webhooks.
-- De Multi-Agent zwerm voert taken asynchroon en autonoom op de achtergrond uit zodra API endpoints getriggerd worden, zonder dat Render's health endpoints time-outs ervaren (H12 error prevention).
+- De Multi-Agent zwerm voert taken asynchroon en autonoom op de achtergrond uit zodra API endpoints getriggerd worden.
+- **Bright Data Integratie:** Werkt via direct-request proxying om de `bright-data-sdk` dependency te vermijden en de build-footprint op Render klein te houden.
 
 ---
 *Built with ❤️ for the Montgomery Urban Open Data Hackathon 2026*
