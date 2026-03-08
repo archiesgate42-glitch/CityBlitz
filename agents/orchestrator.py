@@ -3,20 +3,13 @@ from __future__ import annotations
 """
 OrchestratorAgent (Taro-XI, System Architect) – Industrial Intelligence
 
-Coordinates the 4-agent cascade:
-    Janitor (Data Sanitation) -> Analyst (Hotspot Detection) -> Observer (Urban Vitality) -> Impact (IMPROVE).
-
-Phase 1: BROKEN
----------------
-- If Janitor fails to clean data, stop and log a Critical Data Integrity Failure.
-- If Analyst finds no hotspots, do not trigger the Observer.
-- After Observer completes, synthesize a cityblitz_priority_roadmap.json with:
-  - Adaptive Priority System (FVR, Temporal Weighting)
-  - Agent Consensus (Resident, Municipal, Economy – 2/3 must agree for Priority Alpha)
-  - Explainability Engine (decision_markdown)
+Industrial Hardening:
+  - Process-level threading lock prevents concurrent cascade runs.
+  - Roadmap stub written even when a phase fails (for auditability).
 """
 
 import json
+import threading
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional, Tuple
@@ -29,6 +22,7 @@ from agents.impact import ImpactAgent  # Phase 3: IMPROVE
 
 
 ORCHESTRATOR_AGENT_NAME = "Orchestrator"
+_CASCADE_LOCK = threading.Lock()
 
 
 @dataclass
@@ -390,6 +384,27 @@ class OrchestratorAgent:
         )
         return report
 
+    def _write_failure_stub(self, stopped_phase: str, error: str) -> None:
+        """Write roadmap stub on cascade failure so operators always have something to inspect."""
+        stub = {
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "agent": ORCHESTRATOR_AGENT_NAME,
+            "phase": "Phase 1: BROKEN",
+            "status": f"Cascade stopped at {stopped_phase}.",
+            "red_zone": None,
+            "command_verdict": "Cascade failed – check logs for details.",
+            "cascade_failure": {"stopped_phase": stopped_phase, "error": error},
+        }
+        try:
+            self._bridge.write_inference(
+                ORCHESTRATOR_AGENT_NAME,
+                "cityblitz_priority_roadmap.json",
+                json.dumps(stub, indent=2),
+            )
+            self._log_event("write_failure_stub", "success", {"stopped_phase": stopped_phase})
+        except DataBridgeError as e:
+            self._log_event("write_failure_stub", "failure", {"error": str(e)})
+
     def _load_priority_roadmap(self) -> Dict[str, Any]:
         """Load cityblitz_priority_roadmap.json from disk."""
         try:
@@ -444,59 +459,71 @@ class OrchestratorAgent:
     # ------------------------------------------------------------------
     def run_cascade(self) -> Dict[str, Any]:
         """
-        Execute the full Janitor -> Analyst -> Observer cascade with state-pipe validation.
-        Returns the final cityblitz_priority_roadmap payload.
+        Execute the full cascade. Process-level lock prevents concurrent runs.
+        Always writes a roadmap (success or failure stub) for auditability.
         """
-        self._log_event("run_cascade", "started", None)
+        if not _CASCADE_LOCK.acquire(blocking=False):
+            raise RuntimeError(
+                "A cascade is already running. Wait for it to complete before triggering another."
+            )
 
-        janitor_report: Dict[str, Any]
-        analyst_report: Optional[Dict[str, Any]] = None
-        observer_report: Optional[Dict[str, Any]] = None
+        self._log_event("run_cascade", "started", None)
         stopped_phase: Optional[str] = None
 
-        # 1. Janitor
         try:
-            janitor_report = self._janitor_phase()
-        except Exception as e:
-            stopped_phase = "Janitor"
-            self._log_event("run_cascade", "stopped", {"phase": stopped_phase, "error": str(e)})
-            raise
+            try:
+                janitor_report = self._janitor_phase()
+            except Exception as e:
+                stopped_phase = "Janitor"
+                self._log_event("run_cascade", "stopped", {"phase": stopped_phase, "error": str(e)})
+                self._write_failure_stub(stopped_phase, str(e))
+                raise
 
-        # 2. Analyst
-        analyst_report = self._analyst_phase()
-        hotspots_detected = int(analyst_report.get("hotspots_detected", 0))
+            try:
+                analyst_report = self._analyst_phase()
+            except Exception as e:
+                stopped_phase = "Analyst"
+                self._log_event("run_cascade", "stopped", {"phase": stopped_phase, "error": str(e)})
+                self._write_failure_stub(stopped_phase, str(e))
+                raise
 
-        # 3. Observer (conditional)
-        observer_report = self._observer_phase(hotspots_detected)
+            hotspots_detected = int(analyst_report.get("hotspots_detected", 0))
+            observer_report = self._observer_phase(hotspots_detected)
 
-        cascade = CascadeResult(
-            janitor_report=janitor_report,
-            analyst_report=analyst_report,
-            observer_report=observer_report,
-            stopped_phase=stopped_phase,
-        )
+            cascade = CascadeResult(
+                janitor_report=janitor_report,
+                analyst_report=analyst_report,
+                observer_report=observer_report,
+                stopped_phase=None,
+            )
 
-        # 4. Final roadmap
-        roadmap = self._write_priority_roadmap(cascade, observer_report)
-        # 5. Phase 3: IMPROVE (impact)
-        impact_report = self._impact_phase()
-        # 6. Enrich roadmap with Industrial Intelligence (consensus, explainability)
-        if roadmap.get("red_zone"):
-            self._enrich_roadmap_with_transparency(roadmap, impact_report)
-            roadmap = self._load_priority_roadmap()
+            try:
+                roadmap = self._write_priority_roadmap(cascade, observer_report)
+            except Exception as e:
+                stopped_phase = "WriteRoadmap"
+                self._log_event("run_cascade", "stopped", {"phase": stopped_phase, "error": str(e)})
+                self._write_failure_stub(stopped_phase, str(e))
+                raise
 
-        self._log_event(
-            "run_cascade",
-            "completed",
-            {
-                "red_zone": roadmap.get("red_zone"),
-                "impact": {
-                    "target_location": (impact_report or {}).get("target_location") if impact_report else None,
+            impact_report = self._impact_phase()
+            if roadmap.get("red_zone"):
+                self._enrich_roadmap_with_transparency(roadmap, impact_report)
+                roadmap = self._load_priority_roadmap()
+
+            self._log_event(
+                "run_cascade",
+                "completed",
+                {
+                    "red_zone": roadmap.get("red_zone"),
+                    "impact": {
+                        "target_location": (impact_report or {}).get("target_location") if impact_report else None,
+                    },
                 },
-            },
-        )
-        # Return roadmap as primary payload; impact is persisted separately to impact_prediction.json.
-        return roadmap
+            )
+            return roadmap
+
+        finally:
+            _CASCADE_LOCK.release()
 
 
 def _pretty_print_summary(summary: Dict[str, Any]) -> None:

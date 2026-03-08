@@ -2,10 +2,16 @@
 """
 DataBridge: the ONLY gateway for agents to access data.
 Enforces read-only from data/raw, write-only to data/inference, with full audit logging.
+
+Industrial Hardening:
+  - MAX_READ_SIZE_BYTES (256MB) and MAX_WRITE_SIZE_BYTES (512MB) guards.
+  - ALLOWED_WRITE_EXTENSIONS whitelist prevents binary injection.
+  - Thread-safe audit logging via Lock.
 """
 
 from pathlib import Path
 import json
+import threading
 from datetime import datetime, timezone
 from typing import Union
 
@@ -13,6 +19,16 @@ import requests
 
 # Allowed agent names for audit clarity
 ALLOWED_AGENTS = frozenset({"Janitor", "Analyst", "Observer", "Orchestrator", "Impact"})
+
+# Whitelisted extensions for processed / inference writes (prevents binary injection)
+ALLOWED_WRITE_EXTENSIONS = frozenset({
+    ".csv", ".json", ".txt", ".log", ".parquet", ".geojson",
+})
+
+MAX_READ_SIZE_BYTES = 256 * 1024 * 1024   # 256 MB
+MAX_WRITE_SIZE_BYTES = 512 * 1024 * 1024  # 512 MB
+
+_EXTERNAL_FETCH_TIMEOUT = (10, 120)  # (connect, read) seconds
 
 
 class DataBridgeError(Exception):
@@ -42,6 +58,7 @@ class DataBridge:
         self._inference_dir = self._root / "data" / "inference"
         self._logs_dir = self._root / "logs"
         self._audit_log = self._logs_dir / "data_access_audit.log"
+        self._log_lock = threading.Lock()
         self._raw_dir.mkdir(parents=True, exist_ok=True)
         self._processed_dir.mkdir(parents=True, exist_ok=True)
         self._inference_dir.mkdir(parents=True, exist_ok=True)
@@ -54,21 +71,44 @@ class DataBridge:
 
     def _resolve_under(self, segment: str, base: Path) -> Path:
         """Resolve a relative path under base; forbid escaping with '..'."""
-        if not segment or segment.strip() != segment:
-            raise DataBridgeError("Path segment must be non-empty and not start/end with whitespace")
-        # Normalize and remove leading slashes
-        segment = segment.lstrip("/").replace("\\", "/")
-        if ".." in segment or segment.startswith("/"):
-            raise DataBridgeError("Path must not contain '..' or be absolute")
+        if not segment or not segment.strip():
+            raise DataBridgeError("Path segment must be non-empty.")
+        segment = segment.strip().lstrip("/").replace("\\", "/")
+        if ".." in segment.split("/") or segment.startswith("/"):
+            raise DataBridgeError(f"Path traversal or absolute path not allowed: {segment!r}")
         resolved = (base / segment).resolve()
         try:
-            resolved.relative_to(base)
+            resolved.relative_to(base.resolve())
         except ValueError:
             raise DataBridgeError(f"Path escapes allowed directory: {segment!r}")
         return resolved
 
+    def _validate_write_extension(self, path: str) -> None:
+        """Reject writes with disallowed extensions to prevent binary injection."""
+        suffix = Path(path).suffix.lower()
+        if suffix and suffix not in ALLOWED_WRITE_EXTENSIONS:
+            raise DataBridgeError(
+                f"Write rejected: extension {suffix!r} not in allowed set "
+                f"{sorted(ALLOWED_WRITE_EXTENSIONS)}."
+            )
+
+    def _validate_write_size(self, data: Union[str, bytes]) -> None:
+        """Reject writes exceeding MAX_WRITE_SIZE_BYTES."""
+        size = len(data.encode("utf-8") if isinstance(data, str) else data)
+        if size > MAX_WRITE_SIZE_BYTES:
+            raise DataBridgeError(
+                f"Write rejected: payload size {size:,} bytes exceeds limit "
+                f"{MAX_WRITE_SIZE_BYTES:,} bytes."
+            )
+
+    def _validate_agent(self, agent: str, action: str, path: str) -> None:
+        """Centralised agent validation."""
+        if agent not in ALLOWED_AGENTS:
+            self._log_access(agent, action, path, False, "agent not in allowed list")
+            raise DataBridgeError(f"Unknown agent: {agent!r}. Allowed: {sorted(ALLOWED_AGENTS)}")
+
     def _log_access(self, agent: str, action: str, path: str, success: bool, detail: str = "") -> None:
-        """Append one audit record to the log file."""
+        """Thread-safe append to audit log."""
         record = {
             "timestamp": datetime.now(timezone.utc).isoformat(),
             "agent": agent,
@@ -78,31 +118,16 @@ class DataBridge:
             "detail": detail,
         }
         line = json.dumps(record, ensure_ascii=False) + "\n"
-        try:
-            with open(self._audit_log, "a", encoding="utf-8") as f:
-                f.write(line)
-        except OSError:
-            pass  # Do not break the main operation if logging fails
+        with self._log_lock:
+            try:
+                with open(self._audit_log, "a", encoding="utf-8") as f:
+                    f.write(line)
+            except OSError:
+                pass
 
     def read_only(self, agent: str, path: str, encoding: str = "utf-8") -> str:
-        """
-        Fetch data from data/raw only. This is the only way agents may read raw data.
-
-        Args:
-            agent: One of Janitor, Analyst, Observer, Orchestrator (for audit).
-            path: Relative path under data/raw (e.g. "montgomery/2024.csv").
-            encoding: Text encoding for the file.
-
-        Returns:
-            File contents as string.
-
-        Raises:
-            DataBridgeError: If path is invalid or outside data/raw.
-        """
-        if agent not in ALLOWED_AGENTS:
-            self._log_access(agent, "read_only", path, False, "agent not in allowed list")
-            raise DataBridgeError(f"Unknown agent: {agent!r}. Allowed: {sorted(ALLOWED_AGENTS)}")
-
+        """Fetch data from data/raw only (text)."""
+        self._validate_agent(agent, "read_only", path)
         try:
             full_path = self._resolve_under(path, self._raw_dir)
         except DataBridgeError as e:
@@ -113,6 +138,13 @@ class DataBridge:
             self._log_access(agent, "read_only", path, False, "file not found")
             raise DataBridgeError(f"Raw file not found: {path!r}")
 
+        size = full_path.stat().st_size
+        if size > MAX_READ_SIZE_BYTES:
+            self._log_access(agent, "read_only", path, False, f"file too large: {size} bytes")
+            raise DataBridgeError(
+                f"Raw file {path!r} is {size:,} bytes, exceeding read limit {MAX_READ_SIZE_BYTES:,}."
+            )
+
         try:
             content = full_path.read_text(encoding=encoding)
             self._log_access(agent, "read_only", path, True)
@@ -122,25 +154,8 @@ class DataBridge:
             raise DataBridgeError(f"Cannot read raw file {path!r}: {e}") from e
 
     def read_inference(self, agent: str, path: str, encoding: str = "utf-8") -> str:
-        """
-        Fetch data from data/inference only. This is the only way agents may read
-        model conclusions and downstream analytics.
-
-        Args:
-            agent: One of Janitor, Analyst, Observer, Orchestrator (for audit).
-            path: Relative path under data/inference (e.g. "hotspot_analysis.json").
-            encoding: Text encoding for the file.
-
-        Returns:
-            File contents as string.
-
-        Raises:
-            DataBridgeError: If path is invalid or outside data/inference.
-        """
-        if agent not in ALLOWED_AGENTS:
-            self._log_access(agent, "read_inference", path, False, "agent not in allowed list")
-            raise DataBridgeError(f"Unknown agent: {agent!r}. Allowed: {sorted(ALLOWED_AGENTS)}")
-
+        """Fetch data from data/inference only."""
+        self._validate_agent(agent, "read_inference", path)
         try:
             full_path = self._resolve_under(path, self._inference_dir)
         except DataBridgeError as e:
@@ -151,6 +166,13 @@ class DataBridge:
             self._log_access(agent, "read_inference", path, False, "file not found")
             raise DataBridgeError(f"Inference file not found: {path!r}")
 
+        size = full_path.stat().st_size
+        if size > MAX_READ_SIZE_BYTES:
+            self._log_access(agent, "read_inference", path, False, f"file too large: {size} bytes")
+            raise DataBridgeError(
+                f"Inference file {path!r} is {size:,} bytes, exceeding read limit {MAX_READ_SIZE_BYTES:,}."
+            )
+
         try:
             content = full_path.read_text(encoding=encoding)
             self._log_access(agent, "read_inference", path, True)
@@ -160,25 +182,8 @@ class DataBridge:
             raise DataBridgeError(f"Cannot read inference file {path!r}: {e}") from e
 
     def read_processed(self, agent: str, path: str, encoding: str = "utf-8") -> str:
-        """
-        Fetch data from data/processed only. This is the only way agents may read
-        cleaned/sanitized datasets.
-
-        Args:
-            agent: One of Janitor, Analyst, Observer, Orchestrator (for audit).
-            path: Relative path under data/processed (e.g. "911_Calls.csv").
-            encoding: Text encoding for the file.
-
-        Returns:
-            File contents as string.
-
-        Raises:
-            DataBridgeError: If path is invalid or outside data/processed.
-        """
-        if agent not in ALLOWED_AGENTS:
-            self._log_access(agent, "read_processed", path, False, "agent not in allowed list")
-            raise DataBridgeError(f"Unknown agent: {agent!r}. Allowed: {sorted(ALLOWED_AGENTS)}")
-
+        """Fetch data from data/processed only."""
+        self._validate_agent(agent, "read_processed", path)
         try:
             full_path = self._resolve_under(path, self._processed_dir)
         except DataBridgeError as e:
@@ -189,6 +194,13 @@ class DataBridge:
             self._log_access(agent, "read_processed", path, False, "file not found")
             raise DataBridgeError(f"Processed file not found: {path!r}")
 
+        size = full_path.stat().st_size
+        if size > MAX_READ_SIZE_BYTES:
+            self._log_access(agent, "read_processed", path, False, f"file too large: {size} bytes")
+            raise DataBridgeError(
+                f"Processed file {path!r} is {size:,} bytes, exceeding read limit {MAX_READ_SIZE_BYTES:,}."
+            )
+
         try:
             content = full_path.read_text(encoding=encoding)
             self._log_access(agent, "read_processed", path, True)
@@ -198,26 +210,8 @@ class DataBridge:
             raise DataBridgeError(f"Cannot read processed file {path!r}: {e}") from e
 
     def read_log(self, agent: str, path: str, encoding: str = "utf-8") -> str:
-        """
-        Fetch a log file from logs/ (e.g. data_access_audit.log, orchestrator_agent.log).
-
-        This is primarily intended for dashboards and audits; it is read-only.
-
-        Args:
-            agent: One of Janitor, Analyst, Observer, Orchestrator (for audit).
-            path: Relative path under logs/ (e.g. "data_access_audit.log").
-            encoding: Text encoding for the file.
-
-        Returns:
-            File contents as string.
-
-        Raises:
-            DataBridgeError: If path is invalid or file is missing.
-        """
-        if agent not in ALLOWED_AGENTS:
-            self._log_access(agent, "read_log", path, False, "agent not in allowed list")
-            raise DataBridgeError(f"Unknown agent: {agent!r}. Allowed: {sorted(ALLOWED_AGENTS)}")
-
+        """Fetch a log file from logs/ (read-only, for dashboards / audits)."""
+        self._validate_agent(agent, "read_log", path)
         try:
             full_path = self._resolve_under(path, self._logs_dir)
         except DataBridgeError as e:
@@ -228,6 +222,13 @@ class DataBridge:
             self._log_access(agent, "read_log", path, False, "file not found")
             raise DataBridgeError(f"Log file not found: {path!r}")
 
+        size = full_path.stat().st_size
+        if size > MAX_READ_SIZE_BYTES:
+            self._log_access(agent, "read_log", path, False, f"file too large: {size} bytes")
+            raise DataBridgeError(
+                f"Log file {path!r} is {size:,} bytes, exceeding read limit {MAX_READ_SIZE_BYTES:,}."
+            )
+
         try:
             content = full_path.read_text(encoding=encoding)
             self._log_access(agent, "read_log", path, True)
@@ -236,29 +237,28 @@ class DataBridge:
             self._log_access(agent, "read_log", path, False, str(e))
             raise DataBridgeError(f"Cannot read log file {path!r}: {e}") from e
 
-    def fetch_external_data(self, agent: str, url: str, target_name: str | None = None) -> Path:
+    def fetch_external_data(
+        self,
+        agent: str,
+        url: str,
+        target_name: str | None = None,
+        *,
+        chunk_size: int = 8192,
+    ) -> Path:
         """
-        Download an external dataset into data/raw using industrial logging.
-
-        Args:
-            agent: One of the allowed agents (typically Orchestrator/Impact/Analyst).
-            url: HTTP(S) URL to fetch.
-            target_name: Optional file name under data/raw/external/. If omitted,
-                it is derived from the URL path.
-
-        Returns:
-            The resolved Path to the downloaded file inside data/raw.
+        Download an external dataset into data/raw using chunked streaming.
+        Validates URL scheme; honours MAX_WRITE_SIZE_BYTES during download.
         """
-        if agent not in ALLOWED_AGENTS:
-            self._log_access(agent, "fetch_external_data", url, False, "agent not in allowed list")
-            raise DataBridgeError(f"Unknown agent: {agent!r}. Allowed: {sorted(ALLOWED_AGENTS)}")
+        self._validate_agent(agent, "fetch_external_data", url)
+        if not url.lower().startswith(("http://", "https://")):
+            self._log_access(agent, "fetch_external_data", url, False, "invalid scheme")
+            raise DataBridgeError(f"Only http/https URLs are allowed. Got: {url!r}")
 
         try:
             parsed_name = Path(url.split("?", 1)[0]).name or "dataset"
         except Exception:
             parsed_name = "dataset"
         filename = target_name or parsed_name
-        # Store under data/raw/external/
         segment = str(Path("external") / filename)
 
         try:
@@ -270,36 +270,40 @@ class DataBridge:
         full_path.parent.mkdir(parents=True, exist_ok=True)
 
         try:
-            resp = requests.get(url, timeout=60)
-            resp.raise_for_status()
-            data = resp.content
-        except Exception as e:
+            with requests.get(url, timeout=_EXTERNAL_FETCH_TIMEOUT, stream=True) as resp:
+                resp.raise_for_status()
+                total = 0
+                with open(full_path, "wb") as fh:
+                    for chunk in resp.iter_content(chunk_size=chunk_size):
+                        if chunk:
+                            total += len(chunk)
+                            if total > MAX_WRITE_SIZE_BYTES:
+                                fh.close()
+                                full_path.unlink(missing_ok=True)
+                                raise DataBridgeError(
+                                    f"External file exceeds size limit {MAX_WRITE_SIZE_BYTES:,} bytes."
+                                )
+                            fh.write(chunk)
+        except requests.RequestException as e:
             self._log_access(agent, "fetch_external_data", url, False, f"request_failed: {e}")
+            full_path.unlink(missing_ok=True)
             raise DataBridgeError(f"Failed to fetch external data from {url!r}: {e}") from e
-
-        try:
-            full_path.write_bytes(data)
-            self._log_access(agent, "fetch_external_data", str(full_path.relative_to(self._raw_dir)), True, url)
-            return full_path
+        except DataBridgeError:
+            self._log_access(agent, "fetch_external_data", url, False, "size_limit_exceeded")
+            raise
         except OSError as e:
-            self._log_access(agent, "fetch_external_data", str(full_path), False, f"write_failed: {e}")
+            self._log_access(agent, "fetch_external_data", url, False, f"write_failed: {e}")
             raise DataBridgeError(f"Failed to write external data to {full_path!r}: {e}") from e
 
+        self._log_access(
+            agent, "fetch_external_data",
+            str(full_path.relative_to(self._raw_dir)), True, url,
+        )
+        return full_path
+
     def read_only_bytes(self, agent: str, path: str) -> bytes:
-        """
-        Fetch data from data/raw as bytes (e.g. for binary files).
-
-        Args:
-            agent: One of Janitor, Analyst, Observer, Orchestrator.
-            path: Relative path under data/raw.
-
-        Returns:
-            File contents as bytes.
-        """
-        if agent not in ALLOWED_AGENTS:
-            self._log_access(agent, "read_only_bytes", path, False, "agent not in allowed list")
-            raise DataBridgeError(f"Unknown agent: {agent!r}. Allowed: {sorted(ALLOWED_AGENTS)}")
-
+        """Fetch data from data/raw as bytes."""
+        self._validate_agent(agent, "read_only_bytes", path)
         try:
             full_path = self._resolve_under(path, self._raw_dir)
         except DataBridgeError as e:
@@ -310,6 +314,13 @@ class DataBridge:
             self._log_access(agent, "read_only_bytes", path, False, "file not found")
             raise DataBridgeError(f"Raw file not found: {path!r}")
 
+        size = full_path.stat().st_size
+        if size > MAX_READ_SIZE_BYTES:
+            self._log_access(agent, "read_only_bytes", path, False, f"file too large: {size} bytes")
+            raise DataBridgeError(
+                f"Raw file {path!r} is {size:,} bytes, exceeding read limit {MAX_READ_SIZE_BYTES:,}."
+            )
+
         try:
             content = full_path.read_bytes()
             self._log_access(agent, "read_only_bytes", path, True)
@@ -319,46 +330,27 @@ class DataBridge:
             raise DataBridgeError(f"Cannot read raw file {path!r}: {e}") from e
 
     def list_raw(self, agent: str, extensions: tuple = (".csv", ".json")) -> list[str]:
-        """
-        List relative paths of files under data/raw with the given extensions.
-        Used e.g. by Janitor to discover new CSV/JSON files.
-
-        Args:
-            agent: For audit log.
-            extensions: File suffixes to include (default .csv, .json).
-
-        Returns:
-            Sorted list of relative path strings.
-        """
-        if agent not in ALLOWED_AGENTS:
-            self._log_access(agent, "list_raw", "", False, "agent not in allowed list")
-            raise DataBridgeError(f"Unknown agent: {agent!r}. Allowed: {sorted(ALLOWED_AGENTS)}")
+        """List relative paths of files under data/raw with given extensions."""
+        self._validate_agent(agent, "list_raw", "")
         out: list[str] = []
         try:
             for p in sorted(self._raw_dir.rglob("*")):
                 if p.is_file() and p.suffix.lower() in extensions:
                     out.append(str(p.relative_to(self._raw_dir)))
-            self._log_access(agent, "list_raw", f"count={len(out)}", True)
+            detail = f"count={len(out)}"
+            if not out:
+                detail += " (empty)"
+            self._log_access(agent, "list_raw", detail, True)
             return out
         except OSError as e:
             self._log_access(agent, "list_raw", "", False, str(e))
             raise DataBridgeError(f"Cannot list raw dir: {e}") from e
 
     def write_processed(self, agent: str, path: str, data: Union[str, bytes]) -> Path:
-        """
-        Save data to data/processed only (e.g. cleaned output from Janitor).
-
-        Args:
-            agent: For audit log.
-            path: Relative path under data/processed.
-            data: String (UTF-8) or bytes.
-
-        Returns:
-            Resolved path of the written file.
-        """
-        if agent not in ALLOWED_AGENTS:
-            self._log_access(agent, "write_processed", path, False, "agent not in allowed list")
-            raise DataBridgeError(f"Unknown agent: {agent!r}. Allowed: {sorted(ALLOWED_AGENTS)}")
+        """Save data to data/processed only (e.g. cleaned output from Janitor)."""
+        self._validate_agent(agent, "write_processed", path)
+        self._validate_write_extension(path)
+        self._validate_write_size(data)
         try:
             full_path = self._resolve_under(path, self._processed_dir)
         except DataBridgeError as e:
@@ -379,22 +371,23 @@ class DataBridge:
     def remove_raw(self, agent: str, path: str) -> None:
         """
         Remove a file from data/raw (e.g. after successful move to processed).
-
-        Args:
-            agent: For audit log.
-            path: Relative path under data/raw.
+        Idempotent: already-deleted files are logged and ignored.
         """
-        if agent not in ALLOWED_AGENTS:
-            self._log_access(agent, "remove_raw", path, False, "agent not in allowed list")
-            raise DataBridgeError(f"Unknown agent: {agent!r}. Allowed: {sorted(ALLOWED_AGENTS)}")
+        self._validate_agent(agent, "remove_raw", path)
         try:
             full_path = self._resolve_under(path, self._raw_dir)
         except DataBridgeError as e:
             self._log_access(agent, "remove_raw", path, False, str(e))
             raise
-        if not full_path.exists() or not full_path.is_file():
-            self._log_access(agent, "remove_raw", path, False, "not a file or missing")
-            raise DataBridgeError(f"Raw file not found or not a file: {path!r}")
+
+        if not full_path.exists():
+            self._log_access(agent, "remove_raw", path, True, "already absent")
+            return
+
+        if not full_path.is_file():
+            self._log_access(agent, "remove_raw", path, False, "not a regular file")
+            raise DataBridgeError(f"Not a regular file: {path!r}")
+
         try:
             full_path.unlink()
             self._log_access(agent, "remove_raw", path, True)
@@ -403,24 +396,10 @@ class DataBridge:
             raise DataBridgeError(f"Cannot remove raw file {path!r}: {e}") from e
 
     def write_inference(self, agent: str, path: str, data: Union[str, bytes]) -> Path:
-        """
-        Save data to data/inference only. This is the only way agents may write conclusions.
-
-        Args:
-            agent: One of Janitor, Analyst, Observer, Orchestrator (for audit).
-            path: Relative path under data/inference (e.g. "orcha/conclusions.json").
-            data: String (written as UTF-8) or bytes.
-
-        Returns:
-            Resolved path of the written file.
-
-        Raises:
-            DataBridgeError: If path is invalid or outside data/inference.
-        """
-        if agent not in ALLOWED_AGENTS:
-            self._log_access(agent, "write_inference", path, False, "agent not in allowed list")
-            raise DataBridgeError(f"Unknown agent: {agent!r}. Allowed: {sorted(ALLOWED_AGENTS)}")
-
+        """Save data to data/inference only. The ONLY way agents may write conclusions."""
+        self._validate_agent(agent, "write_inference", path)
+        self._validate_write_extension(path)
+        self._validate_write_size(data)
         try:
             full_path = self._resolve_under(path, self._inference_dir)
         except DataBridgeError as e:

@@ -53,7 +53,14 @@ class ImpactAgent:
         cost_per_call: float = 800.0,
     ) -> None:
         self._bridge = bridge or DataBridge()
-        self._reduction_low, self._reduction_high = reduction_range
+        low, high = reduction_range
+        if not (0.0 < low <= high <= 1.0):
+            raise ValueError(
+                f"reduction_range must satisfy 0 < low <= high <= 1. Got {reduction_range!r}"
+            )
+        self._reduction_low, self._reduction_high = low, high
+        if cost_per_call <= 0:
+            raise ValueError(f"cost_per_call must be positive. Got {cost_per_call!r}")
         self._cost_per_call = cost_per_call
 
     # ------------------------------------------------------------------
@@ -142,21 +149,22 @@ class ImpactAgent:
         self._log_event("load_911_calls", "success", {"rows": len(df), "columns": list(df.columns)})
         return df
 
-    def _filter_zone_rows(self, df: pd.DataFrame, ctx: ImpactContext) -> pd.DataFrame:
+    def _filter_zone_rows(self, df: pd.DataFrame, ctx: ImpactContext) -> Tuple[pd.DataFrame, bool]:
         """
-        Filter 911 rows that belong to the same Zip Code/District as the Priority Alpha zone.
-
-        Because schemas can vary, we try a best-effort match on common location fields.
-        If no matching rows are found, we conservatively fall back to the full dataframe.
+        Filter 911 rows belonging to the Priority Alpha zone.
+        Returns (filtered_df, zone_matched). If no match, returns (full_df, False).
         """
         location = ctx.location
         loc_candidates = [
-            c
-            for c in df.columns
+            c for c in df.columns
             if any(k in c.lower() for k in ("zip", "district", "area", "zone", "neighborhood"))
         ]
         if not loc_candidates:
-            return df
+            self._log_event(
+                "filter_zone_rows", "no_location_columns",
+                {"note": "Using full dataset as proxy – match unconfirmed."},
+            )
+            return df, False
 
         mask = pd.Series(False, index=df.index)
         for col in loc_candidates:
@@ -167,10 +175,12 @@ class ImpactAgent:
 
         zone_df = df[mask]
         if zone_df.empty:
-            # If there is no direct match on location columns, treat the full dataset
-            # as representing the affected urban environment for this prototype.
-            return df
-        return zone_df
+            self._log_event(
+                "filter_zone_rows", "no_match",
+                {"location": location, "note": "No rows matched – using full dataset as city-wide proxy."},
+            )
+            return df, False
+        return zone_df, True
 
     def _compute_temporal_weights(self, df: pd.DataFrame) -> Tuple[pd.Series, bool]:
         """
@@ -211,47 +221,33 @@ class ImpactAgent:
         """FVR = friction / (vibe + 0.01). Higher = more urgency."""
         return friction / (max(vibe, 0.01) + 0.01)
 
-    def _filter_safety_crime_calls(self, df: pd.DataFrame) -> pd.DataFrame:
-        """
-        Restrict to safety/crime oriented calls based on textual fields.
-        """
+    def _filter_safety_crime_calls(self, df: pd.DataFrame) -> Tuple[pd.DataFrame, bool]:
+        """Restrict to safety/crime oriented calls. Returns (filtered_df, keyword_matched)."""
         text_cols = [
-            c
-            for c in df.columns
+            c for c in df.columns
             if any(k in c.lower() for k in ("type", "nature", "desc", "category", "problem", "incident"))
         ]
         if not text_cols:
-            return df
+            return df, False
 
         keywords = (
-            "assault",
-            "burglary",
-            "theft",
-            "robbery",
-            "weapon",
-            "gun",
-            "shots fired",
-            "shooting",
-            "domestic",
-            "violence",
-            "fight",
-            "disturbance",
-            "threat",
-            "suspicious",
-            "trespass",
+            "assault", "burglary", "theft", "robbery", "weapon", "gun",
+            "shots fired", "shooting", "domestic", "violence", "fight",
+            "disturbance", "threat", "suspicious", "trespass",
         )
-
         mask = pd.Series(False, index=df.index)
         for col in text_cols:
             try:
-                series = df[col].astype(str).str.lower()
+                s = df[col].astype(str).str.lower()
                 for kw in keywords:
-                    mask |= series.str.contains(kw, na=False)
+                    mask |= s.str.contains(kw, na=False)
             except Exception:
                 continue
 
         subset = df[mask]
-        return subset if not subset.empty else df
+        if subset.empty:
+            return df, False
+        return subset, True
 
     # ------------------------------------------------------------------
     # Public API
@@ -271,8 +267,8 @@ class ImpactAgent:
             self._log_event("run", "skipped", {"reason": "no_911_data"})
             return None
 
-        zone_df = self._filter_zone_rows(df_911, ctx)
-        safety_df = self._filter_safety_crime_calls(zone_df)
+        zone_df, zone_matched = self._filter_zone_rows(df_911, ctx)
+        safety_df, safety_matched = self._filter_safety_crime_calls(zone_df)
 
         # Temporal Weighting: 2.5x for most recent month
         weights, temporal_applied = self._compute_temporal_weights(safety_df)
@@ -308,6 +304,15 @@ class ImpactAgent:
             "priority": ctx.priority,
             "friction_score": ctx.friction_score,
             "vibe_score": ctx.vibe_score,
+            "data_quality": {
+                "zone_matched": zone_matched,
+                "safety_keyword_matched": safety_matched,
+                "note": (
+                    "Direct zone match found; safety keywords applied."
+                    if zone_matched and safety_matched
+                    else "City-wide proxy used – projection is an upper-bound estimate."
+                ),
+            },
             "aps": {
                 "friction_vibe_ratio": round(fvr, 3),
                 "temporal_weight_applied": temporal_applied,

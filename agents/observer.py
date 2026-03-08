@@ -1,26 +1,29 @@
 from __future__ import annotations
 
 """
-ObserverAgent (Taro-XI persona):
-- Reads hotspot analysis from data/inference.
-- For each high-friction hotspot (zip/district), simulates a Bright Data "Web Sentiment"
-  pull and computes a Vibe Score (0.0–1.0) using Gemini-based sentiment on mock snippets.
-- Flags Priority Alpha when Vibe is low and friction is high.
-- Emits an Urban Vitality Report into data/inference/final_vibe_check.json.
+ObserverAgent (Taro-XI persona).
+
+Industrial Hardening:
+  - Exponential-backoff retries for Gemini.
+  - Returns None (not 0.5) on API failure so Orchestrator can distinguish
+    "neutral sentiment" from "API error".
+  - friction_high_threshold validated in __init__.
+  - genai.configure only when api_key present.
 """
 
 import json
+import time
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
-
-import google.generativeai as genai
 
 from core.bridge import DataBridge, DataBridgeError
 from core.config import get_gemini_api_key
 
 
 AGENT_NAME = "Observer"
+_MAX_RETRIES = 3
+_RETRY_BASE_DELAY = 1.0
 
 
 @dataclass
@@ -52,11 +55,20 @@ class ObserverAgent:
     ) -> None:
         self._bridge = bridge or DataBridge()
         self._model_name = model_name
+        if not (0.0 < friction_high_threshold <= 1.0):
+            raise ValueError(
+                f"friction_high_threshold must be in (0.0, 1.0], got {friction_high_threshold!r}"
+            )
         self._friction_high_threshold = friction_high_threshold
         self._api_key = get_gemini_api_key()
 
         if self._api_key:
-            genai.configure(api_key=self._api_key)
+            try:
+                import google.generativeai as genai
+                genai.configure(api_key=self._api_key)
+            except Exception as e:
+                self._log_event("init", "genai_configure_failed", {"error": str(e)})
+                self._api_key = None
 
     # ------------------------------------------------------------------
     # Logging
@@ -178,116 +190,111 @@ class ObserverAgent:
         # Clamp to 5–10
         return snippets[:8]
 
-    def _classify_with_gemini(self, text: str) -> str:
+    def _classify_heuristic(self, text: str) -> str:
+        """Rule-based fallback when no API key or offline."""
+        lower = text.lower()
+        neg_words = {
+            "unanswered", "ignored", "unsafe", "fear", "afraid", "complain",
+            "complaint", "frustration", "frustrated", "overflowing", "trash",
+            "dumping", "dirty", "neglected", "rats", "crime", "incident",
+            "shooting", "avoid", "vandalism",
+        }
+        pos_words = {
+            "safer", "praise", "boosting", "festival", "pride", "renovations",
+            "volunteers", "improved", "cleaner",
+        }
+        neg = any(w in lower for w in neg_words)
+        pos = any(w in lower for w in pos_words)
+        if neg and not pos:
+            return "Negative"
+        if pos and not neg:
+            return "Positive"
+        if neg and pos:
+            return "Negative"
+        return "Neutral"
+
+    def _classify_with_gemini(self, text: str) -> Optional[str]:
         """
-        Use Gemini to classify a snippet as Positive, Neutral, or Negative.
-        Falls back to a simple heuristic if the API key/model is unavailable.
+        Classify snippet as Positive/Neutral/Negative. Returns None on persistent failure.
+        Exponential-backoff retry up to _MAX_RETRIES.
         """
         if not self._api_key:
-            lowered = text.lower()
-            negative_triggers = (
-                "unanswered",
-                "ignored",
-                "unsafe",
-                "fear",
-                "afraid",
-                "complain",
-                "complaint",
-                "frustration",
-                "frustrated",
-                "overflowing",
-                "trash",
-                "dumping",
-                "dirty",
-                "neglected",
-                "rats",
-                "crime",
-                "incident",
-                "shooting",
-                "avoid",
-                "vandalism",
-            )
-            positive_triggers = (
-                "safer",
-                "praise",
-                "boosting",
-                "festival",
-                "pride",
-                "renovations",
-                "volunteers",
-                "improved",
-                "cleaner",
-            )
-            neg = any(w in lowered for w in negative_triggers)
-            pos = any(w in lowered for w in positive_triggers)
-            if neg and not pos:
-                return "Negative"
-            if pos and not neg:
-                return "Positive"
-            if neg and pos:
-                # If there is both hope and frustration, lean negative.
-                return "Negative"
-            return "Neutral"
+            return self._classify_heuristic(text)
 
-        try:
-            model = genai.GenerativeModel(self._model_name)
-            prompt = (
-                "You are an urban risk auditor.\n"
-                "Classify the sentiment of the following text ONLY as one of: "
-                "Positive, Neutral, Negative.\n"
-                "Focus specifically on SAFETY, TRASH/CLEANLINESS, and NEIGHBORHOOD PRIDE.\n"
-                "Be highly sensitive to signs of urban decay or citizen frustration. "
-                "If a snippet shows even slight frustration, lean towards 'Negative'.\n"
-                "Respond with just the single word: Positive, Neutral, or Negative.\n\n"
-                f"Text: {text}"
-            )
-            response = model.generate_content(prompt)
-            label = (response.text or "").strip().split()[0]
-            label_upper = label.capitalize()
-            if label_upper not in {"Positive", "Neutral", "Negative"}:
-                return "Neutral"
-            return label_upper
-        except Exception:
-            return "Neutral"
+        import google.generativeai as genai
 
-    def fetch_bright_data_sentiment(self, location: str, friction_score: Optional[float] = None) -> float:
+        prompt = (
+            "You are an urban risk auditor.\n"
+            "Classify the sentiment of the following text ONLY as one of: "
+            "Positive, Neutral, Negative.\n"
+            "Focus specifically on SAFETY, TRASH/CLEANLINESS, and NEIGHBORHOOD PRIDE.\n"
+            "Be highly sensitive to signs of urban decay or citizen frustration. "
+            "If a snippet shows even slight frustration, lean towards 'Negative'.\n"
+            "Respond with just the single word: Positive, Neutral, or Negative.\n\n"
+            f"Text: {text}"
+        )
+
+        last_exc: Optional[Exception] = None
+        for attempt in range(_MAX_RETRIES):
+            try:
+                model = genai.GenerativeModel(self._model_name)
+                response = model.generate_content(prompt)
+                label = (response.text or "").strip().split()[0].capitalize()
+                if label not in {"Positive", "Neutral", "Negative"}:
+                    return "Neutral"
+                return label
+            except Exception as exc:
+                last_exc = exc
+                delay = _RETRY_BASE_DELAY * (2 ** attempt)
+                self._log_event(
+                    "classify_gemini_retry",
+                    "retrying",
+                    {"attempt": attempt + 1, "delay": delay, "error": str(exc)},
+                )
+                time.sleep(delay)
+
+        self._log_event(
+            "classify_gemini",
+            "failure",
+            {"error": str(last_exc), "text_preview": text[:80]},
+        )
+        return None
+
+
+    def fetch_bright_data_sentiment(self, location: str, friction_score: Optional[float] = None) -> Optional[float]:
         """
-        Simulate a Bright Data 'Web Sentiment' fetch for a given location.
-
-        Generates mock snippets (more negative for high-friction locations), classifies each with
-        Gemini, then converts the labels to a numeric Vibe Score in [0.0, 1.0].
-
-        Args:
-            location: Zip/district identifier.
-            friction_score: Optional friction score in [0,1]; when high, snippets are
-                biased toward negative sentiment to surface Priority Alpha zones.
-
-        Returns:
-            Vibe Score (0.0–1.0).
+        Simulate a Bright Data 'Web Sentiment' fetch. Returns None if ALL classifications fail
+        (so Orchestrator can distinguish API error from neutral sentiment).
         """
         snippets = self._generate_mock_snippets(location, friction_score=friction_score)
         scores: List[float] = []
-        label_counts = {"Positive": 0, "Neutral": 0, "Negative": 0}
+        label_counts: Dict[str, int] = {"Positive": 0, "Neutral": 0, "Negative": 0, "Error": 0}
 
-        # In high-friction contexts, interpret even Neutral as relatively low vibe to
-        # surface Priority Alpha conditions more aggressively.
-        if friction_score is not None and friction_score >= self._friction_high_threshold:
-            pos_weight, neu_weight, neg_weight = 0.75, 0.25, 0.0
-        else:
-            pos_weight, neu_weight, neg_weight = 1.0, 0.5, 0.0
+        high = friction_score is not None and friction_score >= self._friction_high_threshold
+        pos_w, neu_w = (0.75, 0.25) if high else (1.0, 0.5)
 
         for s in snippets:
-            label = self._classify_with_gemini(s)
+            label = self._classify_with_gemini(s) if self._api_key else self._classify_heuristic(s)
+            if label is None:
+                label_counts["Error"] += 1
+                continue
             label_counts[label] = label_counts.get(label, 0) + 1
             if label == "Positive":
-                scores.append(pos_weight)
+                scores.append(pos_w)
             elif label == "Neutral":
-                scores.append(neu_weight)
+                scores.append(neu_w)
             else:
-                scores.append(neg_weight)
+                scores.append(0.0)
 
-        vibe_score = float(sum(scores) / len(scores)) if scores else 0.5
+        if not scores:
+            self._log_event(
+                "fetch_bright_data_sentiment",
+                "all_classifications_failed",
+                {"location": location, "error_count": label_counts["Error"]},
+            )
+            return None
 
+        vibe_score = float(sum(scores) / len(scores))
         self._log_event(
             "fetch_bright_data_sentiment",
             "success",
@@ -315,17 +322,18 @@ class ObserverAgent:
         for h in hotspots:
             try:
                 vibe = self.fetch_bright_data_sentiment(h.location, friction_score=h.friction_score)
+                if vibe is None:
+                    self._log_event("process_hotspot", "skipped_no_vibe", {"location": h.location})
+                    continue
                 friction = h.friction_score
                 priority = "Priority Alpha" if (vibe < 0.4 and friction >= self._friction_high_threshold) else "Standard"
-
-                result = {
+                results.append({
                     "location": h.location,
                     "vibe_score": round(vibe, 3),
                     "friction_score": round(friction, 3),
                     "priority": priority,
                     "raw_hotspot": h.raw,
-                }
-                results.append(result)
+                })
             except Exception as e:
                 self._log_event(
                     "process_hotspot",
