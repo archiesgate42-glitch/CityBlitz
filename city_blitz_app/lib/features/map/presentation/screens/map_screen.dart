@@ -203,7 +203,7 @@ class _MapScreenState extends ConsumerState<MapScreen>
   List<Widget> _buildHotspotMarkerOverlay(AsyncValue hotspotAsync) {
     return hotspotAsync.when(
       data: (analysis) {
-        return analysis.hotspots.asMap().entries.map((entry) {
+        return analysis.hotspots.asMap().entries.map<Widget>((entry) {
           final index = entry.key;
           // Spread hotspots around Montgomery
           final lat = AppConstants.defaultLatitude +

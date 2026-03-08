@@ -27,3 +27,29 @@ Only when **at least 2 out of 3** paths agree is an intervention escalated to th
 
 ## 🧠 Unique Edge: Decision Explainability
 Elke 'Priority Alpha' status wordt ondersteund door een **Explainability Engine**, die AI-beslissingen transparant maakt voor beleidsmakers door frictie-coëfficiënten en sentiment-delta's te kwantificeren.
+
+---
+
+## 🏆 Hackathon: Jury Criteria Mix
+
+Ons concept is rechtstreeks ontworpen met de behoeften van Montgomery in gedachten:
+
+### 1. Impact (Real-World Problem Solving) 🌍
+**Focus: Public Safety & 311 Services.** 
+CityBlitz lost het probleem van *overbelaste nood- en stadsdiensten* op door zichtbare frictie (311 klachten) te koppelen aan onzichtbare kwetsbaarheden (Vibe-drops). In plaats van reactief te handelen op 911-calls, kan de stad proactief "Broken Windows" fixen voordat ze escaleren.
+
+### 2. Creativiteit (De "Trust-Bridge" AI) 💡
+Onze **Unique Selling Point (USP)** is betrouwbaarheid. Steden kunnen geen AI gebruiken die hallucineert of liegt. Onze *Trust-Bridge* architectuur vereist een "Proof of Origin". Elke AI-beslissing in CityBlitz is cryptografisch of systemisch herleidbaar tot een exacte bron in het officiële Montgomery Open Data Portal. *Geen brondata? Geen consensus.*
+
+### 3. Haalbaarheid (Ready for Deployment) 🚀
+CityBlitz is niet zomaar een mockup. Het is ontworpen op basis van echte, schaalbare UOS (Urban Operating System) principes.
+- **Clean-Room Design:** De AI leest data, maar overschrijft nooit de bronsilo's.
+- **Platform Onafhankelijk:** Gebouwd met Flutter; draait native op Web (dispatch centers) en Mobile Android/iOS (veldwerkers/janitors).
+
+### 4. Techniek ⚙️
+- **Google Antigravity:** Complexe Flutter state-management en UI generatie.
+- **Bright Data:** Web-sentiment scraping gecombineerd met open stadsdata.
+- **Taro-XI Engine:** Een multi-agent consensus logica (Python backend) die gevoed wordt door Riverpod streams naar een frontend dashboard.
+
+---
+*Built with ❤️ for the Montgomery Urban Open Data Hackathon 2026*

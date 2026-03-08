@@ -53,6 +53,7 @@ class LogRepository {
       '../../logs', // fallback
     ];
     for (final path in candidates) {
+      if (kIsWeb) break; // skip directory checks on web
       if (Directory(path).existsSync()) {
         return path;
       }
