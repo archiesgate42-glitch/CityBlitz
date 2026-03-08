@@ -15,6 +15,7 @@ data/inference/*
 
 # Logs & Credentials
 logs/*.log
+*.log
 logs/*.json
 .env
 
