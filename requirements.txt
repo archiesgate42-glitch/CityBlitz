@@ -15,4 +15,5 @@ chardet>=5.2,<6.0
 Flask>=2.3,<4.0
 gunicorn==21.2.0
 langchain>=0.1,<0.3
-bright-data-sdk>=1.0,<2.0
+requests==2.31.0
+python-dotenv==1.0.0

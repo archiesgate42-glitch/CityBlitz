@@ -19,6 +19,7 @@ from typing import Any, Dict, List, Optional
 
 from core.bridge import DataBridge, DataBridgeError
 from core.config import get_gemini_api_key
+from core.bright_data import BrightDataClient, BrightDataError
 
 
 AGENT_NAME = "Observer"
@@ -61,6 +62,11 @@ class ObserverAgent:
             )
         self._friction_high_threshold = friction_high_threshold
         self._api_key = get_gemini_api_key()
+        
+        try:
+            self._bd_client = BrightDataClient()
+        except BrightDataError:
+            self._bd_client = None
 
         if self._api_key:
             try:
@@ -263,10 +269,36 @@ class ObserverAgent:
 
     def fetch_bright_data_sentiment(self, location: str, friction_score: Optional[float] = None) -> Optional[float]:
         """
-        Simulate a Bright Data 'Web Sentiment' fetch. Returns None if ALL classifications fail
-        (so Orchestrator can distinguish API error from neutral sentiment).
+        Fetch real sentiment via Bright Data if available, else fallback to mock.
         """
-        snippets = self._generate_mock_snippets(location, friction_score=friction_score)
+        if self._bd_client:
+            try:
+                # Construct query for Bright Data based on location
+                query = f"Montgomery Alabama {location} public safety sentiment trash neighborhood pride"
+                urls = [f"https://www.google.com/search?q={query.replace(' ', '+')}"]
+                
+                self._log_event("bright_data", "trigger", {"location": location, "query": query})
+                snapshot_id = self._bd_client.trigger_crawl(urls)
+                
+                # Poll and get result (Simplified for hackathon: using 1st result)
+                # In production, this would be a separate background process
+                results = self._bd_client.poll_until_ready(snapshot_id, max_timeout_sec=120)
+                
+                if results and isinstance(results, list):
+                    # Combine all text from results for Gemini classification
+                    combined_text = " ".join([r.get("markdown", "") or r.get("description", "") for r in results[:3]])
+                    if combined_text:
+                        snippets = [combined_text]
+                    else:
+                        snippets = self._generate_mock_snippets(location, friction_score)
+                else:
+                    snippets = self._generate_mock_snippets(location, friction_score)
+            except Exception as e:
+                self._log_event("bright_data", "failure", {"error": str(e)})
+                snippets = self._generate_mock_snippets(location, friction_score)
+        else:
+            snippets = self._generate_mock_snippets(location, friction_score)
+
         scores: List[float] = []
         label_counts: Dict[str, int] = {"Positive": 0, "Neutral": 0, "Negative": 0, "Error": 0}
 

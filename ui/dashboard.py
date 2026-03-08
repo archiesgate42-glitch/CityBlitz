@@ -29,6 +29,7 @@ import streamlit as st
 
 from core.bridge import DataBridge, DataBridgeError
 from core.scout import run_global_scout
+from core.bright_data import BrightDataClient, BrightDataError
 from agents.orchestrator import OrchestratorAgent
 
 
@@ -344,6 +345,58 @@ def _render_priority_alpha_map_or_card(
         unsafe_allow_html=True,
     )
 
+def _render_bright_data_controls(bridge: DataBridge) -> None:
+    """Render Bright Data Settings and Crawl Runner in the sidebar or a tab."""
+    st.sidebar.markdown("---")
+    st.sidebar.subheader("Bright Data Integration")
+    
+    with st.sidebar.expander("Settings", expanded=False):
+        api_key = st.text_input("API Key", type="password", value=os.environ.get("BRIGHT_DATA_API_KEY", ""))
+        dataset_id = st.text_input("Dataset ID", value=os.environ.get("BRIGHT_DATA_DATASET_ID", ""))
+        if st.button("Save Settings"):
+            # In a real app, we'd persist this properly. For hackathon, we show feedback.
+            st.success("Settings applied to session.")
+            os.environ["BRIGHT_DATA_API_KEY"] = api_key
+            os.environ["BRIGHT_DATA_DATASET_ID"] = dataset_id
+
+    st.sidebar.markdown("#### Crawl Runner")
+    target_urls = st.sidebar.text_area("URLs (one per line)", placeholder="https://example.com")
+    
+    if st.sidebar.button("Run Web Intelligence Crawl"):
+        urls = [u.strip() for u in target_urls.split("\n") if u.strip()]
+        if not urls:
+            st.sidebar.error("Enter at least one URL.")
+        else:
+            try:
+                client = BrightDataClient()
+                st.sidebar.info("Triggering crawl...")
+                snapshot_id = client.trigger_crawl(urls)
+                st.sidebar.success(f"Snapshot triggered: {snapshot_id}")
+                
+                progress_bar = st.sidebar.progress(0)
+                status_text = st.sidebar.empty()
+                
+                # Polling loop
+                for i in range(20): # Max 20 attempts in UI for responsiveness
+                    time.sleep(5)
+                    progress = client.get_progress(snapshot_id)
+                    status = progress.get("status", "unknown")
+                    status_text.text(f"Status: {status}")
+                    progress_bar.progress((i + 1) * 5)
+                    
+                    if status == "ready":
+                        data = client.download_snapshot(snapshot_id)
+                        st.sidebar.success("Crawl complete!")
+                        with st.expander("View Intelligence Data", expanded=True):
+                            st.json(data)
+                        break
+                    elif status == "failed":
+                        st.sidebar.error("Crawl failed.")
+                        break
+                else:
+                    st.sidebar.warning("Crawl taking longer than usual. Check Bright Data console.")
+            except Exception as e:
+                st.sidebar.error(f"Error: {e}")
 
 def main() -> None:
     st.set_page_config(
@@ -353,6 +406,11 @@ def main() -> None:
     )
 
     bridge = DataBridge()
+    import os
+    import time
+
+    # Render Bright Data controls
+    _render_bright_data_controls(bridge)
 
     # Global dark / MI6-style theme + stage box borders
     st.markdown(
