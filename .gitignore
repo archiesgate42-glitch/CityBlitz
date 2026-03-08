@@ -21,3 +21,10 @@ logs/*.json
 
 # System Files
 .DS_Store
+
+# Hackathon Notes & Drafts (Unnecessary for Prod/Repo)
+EmbeddedCodes.txt
+app_icon_prompt.md
+rapport*.md
+testrunrapport.md
+DataBridge.py

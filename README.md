@@ -52,4 +52,14 @@ CityBlitz is niet zomaar een mockup. Het is ontworpen op basis van echte, schaal
 - **Taro-XI Engine:** Een multi-agent consensus logica (Python backend) die gevoed wordt door Riverpod streams naar een frontend dashboard.
 
 ---
+
+## 🚀 Quick Start Deployment (Live op Render)
+De lokale Multi-Agent "Lab Setup" van de **BioNairi CityBlitz**-applicatie is live gegaan op het productie-grid via Render. 
+
+**Hoe het werkt:**
+- De infrastructuur draait in een gecontaineriseerde Web Service (Python 3.11).
+- Een **FastAPI/Flask Orchestration Wrapper** (`main_render.py`) ontsluit de backend via webhooks.
+- De Multi-Agent zwerm voert taken asynchroon en autonoom op de achtergrond uit zodra API endpoints getriggerd worden, zonder dat Render's health endpoints time-outs ervaren (H12 error prevention).
+
+---
 *Built with ❤️ for the Montgomery Urban Open Data Hackathon 2026*

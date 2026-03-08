@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: bionairi-cityblitz
+    env: python
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "gunicorn main_render:app --bind 0.0.0.0:$PORT"
+    envVars:
+      - key: PORT
+        value: 8080
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: BRIGHT_DATA_KEY
+        sync: false
