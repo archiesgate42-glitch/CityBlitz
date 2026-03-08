@@ -96,4 +96,21 @@ def start_lab():
         print("⚠️ No new files found in data/raw. Check your folder!")
 
 if __name__ == "__main__":
-    start_lab()
+    st.set_page_config(page_title="BioNairi CityBlitz", page_icon="⚡")
+    inject_tutorial() # Toont de tutorial modal
+    
+    st.title("⚡ BioNairi CityBlitz Foundation")
+    st.subheader("Industrial-grade urban data verification")
+
+    if st.button("🚀 Start Janitor Lab"):
+        with st.status("Cleaning Raw Data...", expanded=True) as status:
+            bridge = DataBridge()
+            janitor = JanitorAgent(bridge, move_after_process=True)
+            report = janitor.run()
+            
+            if report['files_processed'] > 0:
+                st.success(f"Janitor finished. Processed {report['files_processed']} files.")
+                st.info("Logs saved to logs/janitor_quality.log")
+            else:
+                st.warning("No new files found in data/raw.")
+            status.update(label="Phase 1 Complete!", state="complete")
