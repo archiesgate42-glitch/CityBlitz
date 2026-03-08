@@ -107,7 +107,7 @@ Map<String, dynamic> _$ConsensusToJson(_Consensus instance) =>
     };
 
 _Explainability _$ExplainabilityFromJson(Map<String, dynamic> json) =>
-    _Explainability(decisionMarkdown: json['decision_markdown'] as String?);
+    _Explainability(logTrace: json['log_trace'] as String?);
 
 Map<String, dynamic> _$ExplainabilityToJson(_Explainability instance) =>
-    <String, dynamic>{'decision_markdown': instance.decisionMarkdown};
+    <String, dynamic>{'log_trace': instance.logTrace};

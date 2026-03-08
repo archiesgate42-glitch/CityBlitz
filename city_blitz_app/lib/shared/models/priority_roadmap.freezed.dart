@@ -1253,7 +1253,7 @@ as bool?,
 /// @nodoc
 mixin _$Explainability {
 
-@JsonKey(name: 'decision_markdown') String? get decisionMarkdown;
+@JsonKey(name: 'log_trace') String? get logTrace;
 /// Create a copy of Explainability
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -1266,16 +1266,16 @@ $ExplainabilityCopyWith<Explainability> get copyWith => _$ExplainabilityCopyWith
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Explainability&&(identical(other.decisionMarkdown, decisionMarkdown) || other.decisionMarkdown == decisionMarkdown));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Explainability&&(identical(other.logTrace, logTrace) || other.logTrace == logTrace));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,decisionMarkdown);
+int get hashCode => Object.hash(runtimeType,logTrace);
 
 @override
 String toString() {
-  return 'Explainability(decisionMarkdown: $decisionMarkdown)';
+  return 'Explainability(logTrace: $logTrace)';
 }
 
 
@@ -1286,7 +1286,7 @@ abstract mixin class $ExplainabilityCopyWith<$Res>  {
   factory $ExplainabilityCopyWith(Explainability value, $Res Function(Explainability) _then) = _$ExplainabilityCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(name: 'decision_markdown') String? decisionMarkdown
+@JsonKey(name: 'log_trace') String? logTrace
 });
 
 
@@ -1303,9 +1303,9 @@ class _$ExplainabilityCopyWithImpl<$Res>
 
 /// Create a copy of Explainability
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? decisionMarkdown = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? logTrace = freezed,}) {
   return _then(_self.copyWith(
-decisionMarkdown: freezed == decisionMarkdown ? _self.decisionMarkdown : decisionMarkdown // ignore: cast_nullable_to_non_nullable
+logTrace: freezed == logTrace ? _self.logTrace : logTrace // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }
@@ -1391,10 +1391,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'decision_markdown')  String? decisionMarkdown)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'log_trace')  String? logTrace)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Explainability() when $default != null:
-return $default(_that.decisionMarkdown);case _:
+return $default(_that.logTrace);case _:
   return orElse();
 
 }
@@ -1412,10 +1412,10 @@ return $default(_that.decisionMarkdown);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'decision_markdown')  String? decisionMarkdown)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'log_trace')  String? logTrace)  $default,) {final _that = this;
 switch (_that) {
 case _Explainability():
-return $default(_that.decisionMarkdown);case _:
+return $default(_that.logTrace);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -1432,10 +1432,10 @@ return $default(_that.decisionMarkdown);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'decision_markdown')  String? decisionMarkdown)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'log_trace')  String? logTrace)?  $default,) {final _that = this;
 switch (_that) {
 case _Explainability() when $default != null:
-return $default(_that.decisionMarkdown);case _:
+return $default(_that.logTrace);case _:
   return null;
 
 }
@@ -1447,10 +1447,10 @@ return $default(_that.decisionMarkdown);case _:
 @JsonSerializable()
 
 class _Explainability implements Explainability {
-  const _Explainability({@JsonKey(name: 'decision_markdown') this.decisionMarkdown});
+  const _Explainability({@JsonKey(name: 'log_trace') this.logTrace});
   factory _Explainability.fromJson(Map<String, dynamic> json) => _$ExplainabilityFromJson(json);
 
-@override@JsonKey(name: 'decision_markdown') final  String? decisionMarkdown;
+@override@JsonKey(name: 'log_trace') final  String? logTrace;
 
 /// Create a copy of Explainability
 /// with the given fields replaced by the non-null parameter values.
@@ -1465,16 +1465,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Explainability&&(identical(other.decisionMarkdown, decisionMarkdown) || other.decisionMarkdown == decisionMarkdown));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Explainability&&(identical(other.logTrace, logTrace) || other.logTrace == logTrace));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,decisionMarkdown);
+int get hashCode => Object.hash(runtimeType,logTrace);
 
 @override
 String toString() {
-  return 'Explainability(decisionMarkdown: $decisionMarkdown)';
+  return 'Explainability(logTrace: $logTrace)';
 }
 
 
@@ -1485,7 +1485,7 @@ abstract mixin class _$ExplainabilityCopyWith<$Res> implements $ExplainabilityCo
   factory _$ExplainabilityCopyWith(_Explainability value, $Res Function(_Explainability) _then) = __$ExplainabilityCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(name: 'decision_markdown') String? decisionMarkdown
+@JsonKey(name: 'log_trace') String? logTrace
 });
 
 
@@ -1502,9 +1502,9 @@ class __$ExplainabilityCopyWithImpl<$Res>
 
 /// Create a copy of Explainability
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? decisionMarkdown = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? logTrace = freezed,}) {
   return _then(_Explainability(
-decisionMarkdown: freezed == decisionMarkdown ? _self.decisionMarkdown : decisionMarkdown // ignore: cast_nullable_to_non_nullable
+logTrace: freezed == logTrace ? _self.logTrace : logTrace // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }

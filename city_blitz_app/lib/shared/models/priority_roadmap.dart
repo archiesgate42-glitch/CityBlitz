@@ -73,7 +73,7 @@ abstract class Consensus with _$Consensus {
 @freezed
 abstract class Explainability with _$Explainability {
   const factory Explainability({
-    @JsonKey(name: 'decision_markdown') String? decisionMarkdown,
+    @JsonKey(name: 'log_trace') String? logTrace,
   }) = _Explainability;
 
   factory Explainability.fromJson(Map<String, dynamic> json) =>

@@ -150,7 +150,7 @@ class ExplainabilitySheet extends ConsumerWidget {
                   child: roadmapAsync.when(
                     data: (roadmap) {
                       final markdown =
-                          roadmap.explainability?.decisionMarkdown;
+                          roadmap.explainability?.logTrace;
                       if (markdown == null || markdown.isEmpty) {
                         return const Text(
                           'No detailed logic provided by Orchestrator.',
