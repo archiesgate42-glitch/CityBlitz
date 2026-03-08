@@ -197,3 +197,19 @@
 {"timestamp": "2026-03-08T01:00:41.921679+00:00", "agent": "Orchestrator", "action": "impact_phase", "outcome": "started"}
 {"timestamp": "2026-03-08T01:00:41.922280+00:00", "agent": "Orchestrator", "action": "impact_phase", "outcome": "skipped_or_no_output"}
 {"timestamp": "2026-03-08T01:00:41.922431+00:00", "agent": "Orchestrator", "action": "run_cascade", "outcome": "completed", "detail": {"red_zone": null, "impact": {"target_location": null}}}
+{"timestamp": "2026-03-08T01:01:36.599723+00:00", "agent": "Orchestrator", "action": "run_cascade", "outcome": "started"}
+{"timestamp": "2026-03-08T01:01:36.599875+00:00", "agent": "Orchestrator", "action": "janitor_phase", "outcome": "started"}
+{"timestamp": "2026-03-08T01:01:36.600406+00:00", "agent": "Orchestrator", "action": "janitor_phase", "outcome": "no_new_raw_data", "detail": {"files_processed": 0, "files_failed": 0, "message": "No new raw files in data/raw (all data already processed or folder empty)."}}
+{"timestamp": "2026-03-08T01:01:36.600516+00:00", "agent": "Orchestrator", "action": "analyst_phase", "outcome": "started"}
+{"timestamp": "2026-03-08T01:01:36.601661+00:00", "agent": "Orchestrator", "action": "analyst_phase", "outcome": "success", "detail": {"hotspots_detected": 4}}
+{"timestamp": "2026-03-08T01:01:36.601735+00:00", "agent": "Orchestrator", "action": "observer_phase", "outcome": "started", "detail": {"hotspots_detected": 4}}
+{"timestamp": "2026-03-08T01:03:44.975230+00:00", "agent": "Orchestrator", "action": "observer_phase", "outcome": "success", "detail": {"locations": 0}}
+{"timestamp": "2026-03-08T01:03:44.975710+00:00", "agent": "Orchestrator", "action": "write_priority_roadmap", "outcome": "success", "detail": {"file": "cityblitz_priority_roadmap.json"}}
+{"timestamp": "2026-03-08T01:03:44.975824+00:00", "agent": "Orchestrator", "action": "impact_phase", "outcome": "started"}
+{"timestamp": "2026-03-08T01:03:44.976397+00:00", "agent": "Orchestrator", "action": "impact_phase", "outcome": "skipped_or_no_output"}
+{"timestamp": "2026-03-08T01:03:44.976495+00:00", "agent": "Orchestrator", "action": "run_cascade", "outcome": "completed", "detail": {"red_zone": null, "impact": {"target_location": null}}}
+{"timestamp": "2026-03-08T01:05:28.123072+00:00", "agent": "Orchestrator", "action": "observer_phase", "outcome": "success", "detail": {"locations": 0}}
+{"timestamp": "2026-03-08T01:05:28.123415+00:00", "agent": "Orchestrator", "action": "write_priority_roadmap", "outcome": "success", "detail": {"file": "cityblitz_priority_roadmap.json"}}
+{"timestamp": "2026-03-08T01:05:28.123491+00:00", "agent": "Orchestrator", "action": "impact_phase", "outcome": "started"}
+{"timestamp": "2026-03-08T01:05:28.123916+00:00", "agent": "Orchestrator", "action": "impact_phase", "outcome": "skipped_or_no_output"}
+{"timestamp": "2026-03-08T01:05:28.123980+00:00", "agent": "Orchestrator", "action": "run_cascade", "outcome": "completed", "detail": {"red_zone": null, "impact": {"target_location": null}}}

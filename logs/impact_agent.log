@@ -38,3 +38,7 @@
 {"timestamp": "2026-03-08T00:24:46.240117+00:00", "agent": "Impact", "action": "run", "outcome": "completed", "detail": {"target_location": "911_Calls", "projected_calls_avoided_mid": 18, "estimated_emergency_cost_savings": 14400.0}}
 {"timestamp": "2026-03-08T01:00:41.922044+00:00", "agent": "Impact", "action": "load_roadmap", "outcome": "no_red_zone"}
 {"timestamp": "2026-03-08T01:00:41.922150+00:00", "agent": "Impact", "action": "run", "outcome": "skipped", "detail": {"reason": "no_red_zone_available"}}
+{"timestamp": "2026-03-08T01:03:44.976181+00:00", "agent": "Impact", "action": "load_roadmap", "outcome": "no_red_zone"}
+{"timestamp": "2026-03-08T01:03:44.976286+00:00", "agent": "Impact", "action": "run", "outcome": "skipped", "detail": {"reason": "no_red_zone_available"}}
+{"timestamp": "2026-03-08T01:05:28.123755+00:00", "agent": "Impact", "action": "load_roadmap", "outcome": "no_red_zone"}
+{"timestamp": "2026-03-08T01:05:28.123831+00:00", "agent": "Impact", "action": "run", "outcome": "skipped", "detail": {"reason": "no_red_zone_available"}}
