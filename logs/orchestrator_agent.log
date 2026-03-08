@@ -174,3 +174,9 @@
 {"timestamp": "2026-03-08T00:24:46.240197+00:00", "agent": "Orchestrator", "action": "impact_phase", "outcome": "success", "detail": {"target_location": "911_Calls", "projected_calls_avoided_mid": 18, "estimated_emergency_cost_savings": 14400.0}}
 {"timestamp": "2026-03-08T00:24:46.240509+00:00", "agent": "Orchestrator", "action": "enrich_roadmap", "outcome": "success", "detail": {"consensus": {"votes": {"resident": true, "municipal": true, "economy": true}, "resident_urgent": true, "municipal_urgent": true, "economy_urgent": true, "urgent_count": 3, "promoted_to_priority_alpha": true}}}
 {"timestamp": "2026-03-08T00:24:46.240734+00:00", "agent": "Orchestrator", "action": "run_cascade", "outcome": "completed", "detail": {"red_zone": {"location": "911_Calls", "vibe_score": 0.25, "friction_score": 0.97, "priority": "Priority Alpha"}, "impact": {"target_location": "911_Calls"}}}
+{"timestamp": "2026-03-08T00:49:58.323916+00:00", "agent": "Orchestrator", "action": "run_cascade", "outcome": "started"}
+{"timestamp": "2026-03-08T00:49:58.324055+00:00", "agent": "Orchestrator", "action": "janitor_phase", "outcome": "started"}
+{"timestamp": "2026-03-08T00:49:58.324561+00:00", "agent": "Orchestrator", "action": "janitor_phase", "outcome": "no_new_raw_data", "detail": {"files_processed": 0, "files_failed": 0, "message": "No new raw files in data/raw (all data already processed or folder empty)."}}
+{"timestamp": "2026-03-08T00:49:58.324648+00:00", "agent": "Orchestrator", "action": "analyst_phase", "outcome": "started"}
+{"timestamp": "2026-03-08T00:49:58.325757+00:00", "agent": "Orchestrator", "action": "analyst_phase", "outcome": "success", "detail": {"hotspots_detected": 4}}
+{"timestamp": "2026-03-08T00:49:58.325831+00:00", "agent": "Orchestrator", "action": "observer_phase", "outcome": "started", "detail": {"hotspots_detected": 4}}

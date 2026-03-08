@@ -250,3 +250,7 @@
 {"timestamp": "2026-03-08T00:25:18.985073+00:00", "agent": "Orchestrator", "action": "read_log", "path": "orchestrator_agent.log", "success": true, "detail": ""}
 {"timestamp": "2026-03-08T00:25:18.985724+00:00", "agent": "Orchestrator", "action": "read_log", "path": "janitor_status.json", "success": true, "detail": ""}
 {"timestamp": "2026-03-08T00:25:19.002854+00:00", "agent": "Orchestrator", "action": "read_log", "path": "data_access_audit.log", "success": true, "detail": ""}
+{"timestamp": "2026-03-08T00:49:58.324336+00:00", "agent": "Janitor", "action": "list_raw", "path": "count=0 (empty)", "success": true, "detail": ""}
+{"timestamp": "2026-03-08T00:49:58.325485+00:00", "agent": "Analyst", "action": "write_inference", "path": "hotspot_analysis.json", "success": true, "detail": ""}
+{"timestamp": "2026-03-08T00:49:58.325691+00:00", "agent": "Orchestrator", "action": "read_inference", "path": "hotspot_analysis.json", "success": true, "detail": ""}
+{"timestamp": "2026-03-08T00:49:58.326102+00:00", "agent": "Observer", "action": "read_inference", "path": "hotspot_analysis.json", "success": true, "detail": ""}
