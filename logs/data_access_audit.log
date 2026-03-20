@@ -282,3 +282,106 @@
 {"timestamp": "2026-03-08T01:05:28.122858+00:00", "agent": "Observer", "action": "write_inference", "path": "final_vibe_check.json", "success": true, "detail": ""}
 {"timestamp": "2026-03-08T01:05:28.123369+00:00", "agent": "Orchestrator", "action": "write_inference", "path": "cityblitz_priority_roadmap.json", "success": true, "detail": ""}
 {"timestamp": "2026-03-08T01:05:28.123701+00:00", "agent": "Impact", "action": "read_inference", "path": "cityblitz_priority_roadmap.json", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:14:15.739451+00:00", "agent": "Janitor", "action": "list_raw", "path": "count=3", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:14:15.740803+00:00", "agent": "Janitor", "action": "read_only_bytes", "path": "City of Montgomery - Open Data Portal (1).csv", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:14:15.797214+00:00", "agent": "Janitor", "action": "write_processed", "path": "City of Montgomery - Open Data Portal (1).csv", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:14:16.605035+00:00", "agent": "Janitor", "action": "remove_raw", "path": "City of Montgomery - Open Data Portal (1).csv", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:14:16.606315+00:00", "agent": "Janitor", "action": "read_only_bytes", "path": "City of Montgomery - Open Data Portal (2).csv", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:14:16.645869+00:00", "agent": "Janitor", "action": "write_processed", "path": "City of Montgomery - Open Data Portal (2).csv", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:14:16.815288+00:00", "agent": "Janitor", "action": "remove_raw", "path": "City of Montgomery - Open Data Portal (2).csv", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:14:16.816748+00:00", "agent": "Janitor", "action": "read_only_bytes", "path": "City of Montgomery - Open Data Portal.csv", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:14:16.857333+00:00", "agent": "Janitor", "action": "write_processed", "path": "City of Montgomery - Open Data Portal.csv", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:14:17.043481+00:00", "agent": "Janitor", "action": "remove_raw", "path": "City of Montgomery - Open Data Portal.csv", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:17:58.498859+00:00", "agent": "Janitor", "action": "list_raw", "path": "count=0 (empty)", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:19:00.452350+00:00", "agent": "Janitor", "action": "list_raw", "path": "count=6", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:19:00.453382+00:00", "agent": "Janitor", "action": "read_only_bytes", "path": "911_Calls.csv", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:19:00.466313+00:00", "agent": "Janitor", "action": "write_processed", "path": "911_Calls.csv", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:19:01.611105+00:00", "agent": "Janitor", "action": "remove_raw", "path": "911_Calls.csv", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:19:01.659339+00:00", "agent": "Janitor", "action": "read_only_bytes", "path": "Business_License.csv", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:19:04.049725+00:00", "agent": "Janitor", "action": "list_raw", "path": "count=5", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:19:04.129576+00:00", "agent": "Janitor", "action": "read_only_bytes", "path": "Business_License.csv", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:19:16.564565+00:00", "agent": "Janitor", "action": "list_raw", "path": "count=5", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:19:16.698522+00:00", "agent": "Janitor", "action": "read_only_bytes", "path": "Business_License.csv", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:19:22.537495+00:00", "agent": "Janitor", "action": "write_processed", "path": "Business_License.csv", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:19:23.097885+00:00", "agent": "Janitor", "action": "remove_raw", "path": "Business_License.csv", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:19:23.200033+00:00", "agent": "Janitor", "action": "read_only_bytes", "path": "City of Montgomery - Open Data Portal (1).csv", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:19:23.618994+00:00", "agent": "Janitor", "action": "write_processed", "path": "City of Montgomery - Open Data Portal (1).csv", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:19:24.176422+00:00", "agent": "Janitor", "action": "remove_raw", "path": "City of Montgomery - Open Data Portal (1).csv", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:19:24.279257+00:00", "agent": "Janitor", "action": "read_only_bytes", "path": "City of Montgomery - Open Data Portal (2).csv", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:19:24.497856+00:00", "agent": "Janitor", "action": "write_processed", "path": "City of Montgomery - Open Data Portal (2).csv", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:19:25.065689+00:00", "agent": "Janitor", "action": "remove_raw", "path": "City of Montgomery - Open Data Portal (2).csv", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:19:25.352855+00:00", "agent": "Janitor", "action": "read_only_bytes", "path": "City of Montgomery - Open Data Portal.csv", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:19:25.680151+00:00", "agent": "Janitor", "action": "write_processed", "path": "City of Montgomery - Open Data Portal.csv", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:19:26.160208+00:00", "agent": "Janitor", "action": "remove_raw", "path": "City of Montgomery - Open Data Portal.csv", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:19:26.336280+00:00", "agent": "Janitor", "action": "read_only_bytes", "path": "Received_311_Service_Request.csv", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:19:29.858101+00:00", "agent": "Janitor", "action": "write_processed", "path": "Business_License.csv", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:19:30.155928+00:00", "agent": "Janitor", "action": "remove_raw", "path": "Business_License.csv", "success": true, "detail": "already absent"}
+{"timestamp": "2026-03-20T02:19:30.189727+00:00", "agent": "Janitor", "action": "read_only_bytes", "path": "City of Montgomery - Open Data Portal (1).csv", "success": false, "detail": "file not found"}
+{"timestamp": "2026-03-20T02:19:30.279754+00:00", "agent": "Janitor", "action": "read_only_bytes", "path": "City of Montgomery - Open Data Portal (2).csv", "success": false, "detail": "file not found"}
+{"timestamp": "2026-03-20T02:19:30.341387+00:00", "agent": "Janitor", "action": "read_only_bytes", "path": "City of Montgomery - Open Data Portal.csv", "success": false, "detail": "file not found"}
+{"timestamp": "2026-03-20T02:19:30.575143+00:00", "agent": "Janitor", "action": "read_only_bytes", "path": "Received_311_Service_Request.csv", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:19:48.142834+00:00", "agent": "Janitor", "action": "write_processed", "path": "Business_License.csv", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:19:48.552873+00:00", "agent": "Janitor", "action": "remove_raw", "path": "Business_License.csv", "success": true, "detail": "already absent"}
+{"timestamp": "2026-03-20T02:19:48.675372+00:00", "agent": "Janitor", "action": "read_only_bytes", "path": "City of Montgomery - Open Data Portal (1).csv", "success": false, "detail": "file not found"}
+{"timestamp": "2026-03-20T02:19:48.839518+00:00", "agent": "Janitor", "action": "read_only_bytes", "path": "City of Montgomery - Open Data Portal (2).csv", "success": false, "detail": "file not found"}
+{"timestamp": "2026-03-20T02:19:48.952335+00:00", "agent": "Janitor", "action": "read_only_bytes", "path": "City of Montgomery - Open Data Portal.csv", "success": false, "detail": "file not found"}
+{"timestamp": "2026-03-20T02:19:49.219656+00:00", "agent": "Janitor", "action": "read_only_bytes", "path": "Received_311_Service_Request.csv", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:20:14.983618+00:00", "agent": "Janitor", "action": "write_processed", "path": "Received_311_Service_Request.csv", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:20:15.373986+00:00", "agent": "Janitor", "action": "remove_raw", "path": "Received_311_Service_Request.csv", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:20:23.686923+00:00", "agent": "Janitor", "action": "write_processed", "path": "Received_311_Service_Request.csv", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:20:24.031143+00:00", "agent": "Janitor", "action": "remove_raw", "path": "Received_311_Service_Request.csv", "success": true, "detail": "already absent"}
+{"timestamp": "2026-03-20T02:20:32.855037+00:00", "agent": "Janitor", "action": "write_processed", "path": "Received_311_Service_Request.csv", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:20:33.023138+00:00", "agent": "Janitor", "action": "remove_raw", "path": "Received_311_Service_Request.csv", "success": true, "detail": "already absent"}
+{"timestamp": "2026-03-20T02:21:07.755959+00:00", "agent": "Janitor", "action": "list_raw", "path": "count=0 (empty)", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:21:32.977644+00:00", "agent": "Janitor", "action": "list_raw", "path": "count=0 (empty)", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:31:00.426882+00:00", "agent": "Janitor", "action": "list_raw", "path": "count=5", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:31:00.427663+00:00", "agent": "Janitor", "action": "read_only_bytes", "path": "911_Calls.csv", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:31:00.443646+00:00", "agent": "Janitor", "action": "write_processed", "path": "911_Calls.csv", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:31:01.050875+00:00", "agent": "Janitor", "action": "remove_raw", "path": "911_Calls.csv", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:31:01.052170+00:00", "agent": "Janitor", "action": "read_only_bytes", "path": "Environmental_Nuisance_(Old).csv", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:31:01.115831+00:00", "agent": "Janitor", "action": "write_processed", "path": "Environmental_Nuisance_(Old).csv", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:31:01.272771+00:00", "agent": "Janitor", "action": "remove_raw", "path": "Environmental_Nuisance_(Old).csv", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:31:01.273668+00:00", "agent": "Janitor", "action": "read_only_bytes", "path": "Most_Visited_Locations.csv", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:31:01.290751+00:00", "agent": "Janitor", "action": "write_processed", "path": "Most_Visited_Locations.csv", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:31:01.476444+00:00", "agent": "Janitor", "action": "remove_raw", "path": "Most_Visited_Locations.csv", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:31:01.501885+00:00", "agent": "Janitor", "action": "read_only_bytes", "path": "SDE.Received_311_Service_Request.csv", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:31:15.540376+00:00", "agent": "Janitor", "action": "write_processed", "path": "SDE.Received_311_Service_Request.csv", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:31:15.709296+00:00", "agent": "Janitor", "action": "remove_raw", "path": "SDE.Received_311_Service_Request.csv", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:31:15.710157+00:00", "agent": "Janitor", "action": "read_only_bytes", "path": "Traffic_Engineering_Key_Performance_Indicators.csv", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:31:15.716919+00:00", "agent": "Janitor", "action": "write_processed", "path": "Traffic_Engineering_Key_Performance_Indicators.csv", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:31:15.877745+00:00", "agent": "Janitor", "action": "remove_raw", "path": "Traffic_Engineering_Key_Performance_Indicators.csv", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:31:38.275507+00:00", "agent": "Janitor", "action": "list_raw", "path": "count=0 (empty)", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:31:39.891946+00:00", "agent": "Janitor", "action": "list_raw", "path": "count=0 (empty)", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:36:59.454486+00:00", "agent": "Janitor", "action": "list_raw", "path": "count=10", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:36:59.455171+00:00", "agent": "Janitor", "action": "read_only_bytes", "path": "911_Calls.csv", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:36:59.466598+00:00", "agent": "Janitor", "action": "write_processed", "path": "911_Calls.csv", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:37:00.072088+00:00", "agent": "Janitor", "action": "remove_raw", "path": "911_Calls.csv", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:37:00.097496+00:00", "agent": "Janitor", "action": "read_only_bytes", "path": "Business_License.csv", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:37:11.595307+00:00", "agent": "Janitor", "action": "write_processed", "path": "Business_License.csv", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:37:11.795277+00:00", "agent": "Janitor", "action": "remove_raw", "path": "Business_License.csv", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:37:11.796100+00:00", "agent": "Janitor", "action": "read_only_bytes", "path": "City of Montgomery - Open Data Portal (1).csv", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:37:11.832584+00:00", "agent": "Janitor", "action": "write_processed", "path": "City of Montgomery - Open Data Portal (1).csv", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:37:12.056948+00:00", "agent": "Janitor", "action": "remove_raw", "path": "City of Montgomery - Open Data Portal (1).csv", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:37:12.057757+00:00", "agent": "Janitor", "action": "read_only_bytes", "path": "City of Montgomery - Open Data Portal (2).csv", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:37:12.094302+00:00", "agent": "Janitor", "action": "write_processed", "path": "City of Montgomery - Open Data Portal (2).csv", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:37:12.326304+00:00", "agent": "Janitor", "action": "remove_raw", "path": "City of Montgomery - Open Data Portal (2).csv", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:37:12.327359+00:00", "agent": "Janitor", "action": "read_only_bytes", "path": "City of Montgomery - Open Data Portal.csv", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:37:12.363745+00:00", "agent": "Janitor", "action": "write_processed", "path": "City of Montgomery - Open Data Portal.csv", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:37:12.547337+00:00", "agent": "Janitor", "action": "remove_raw", "path": "City of Montgomery - Open Data Portal.csv", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:37:12.548234+00:00", "agent": "Janitor", "action": "read_only_bytes", "path": "Environmental_Nuisance_(Old).csv", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:37:12.610112+00:00", "agent": "Janitor", "action": "write_processed", "path": "Environmental_Nuisance_(Old).csv", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:37:12.809736+00:00", "agent": "Janitor", "action": "remove_raw", "path": "Environmental_Nuisance_(Old).csv", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:37:12.810512+00:00", "agent": "Janitor", "action": "read_only_bytes", "path": "Most_Visited_Locations.csv", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:37:12.827566+00:00", "agent": "Janitor", "action": "write_processed", "path": "Most_Visited_Locations.csv", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:37:13.011301+00:00", "agent": "Janitor", "action": "remove_raw", "path": "Most_Visited_Locations.csv", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:37:13.049980+00:00", "agent": "Janitor", "action": "read_only_bytes", "path": "Received_311_Service_Request.csv", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:37:31.747442+00:00", "agent": "Janitor", "action": "write_processed", "path": "Received_311_Service_Request.csv", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:37:31.903856+00:00", "agent": "Janitor", "action": "remove_raw", "path": "Received_311_Service_Request.csv", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:37:31.930267+00:00", "agent": "Janitor", "action": "read_only_bytes", "path": "SDE.Received_311_Service_Request.csv", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:37:46.257611+00:00", "agent": "Janitor", "action": "write_processed", "path": "SDE.Received_311_Service_Request.csv", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:37:46.455994+00:00", "agent": "Janitor", "action": "remove_raw", "path": "SDE.Received_311_Service_Request.csv", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:37:46.456920+00:00", "agent": "Janitor", "action": "read_only_bytes", "path": "Traffic_Engineering_Key_Performance_Indicators.csv", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:37:46.463825+00:00", "agent": "Janitor", "action": "write_processed", "path": "Traffic_Engineering_Key_Performance_Indicators.csv", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T02:37:46.642728+00:00", "agent": "Janitor", "action": "remove_raw", "path": "Traffic_Engineering_Key_Performance_Indicators.csv", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T03:33:20.254168+00:00", "agent": "Janitor", "action": "list_raw", "path": "count=0 (empty)", "success": true, "detail": ""}
+{"timestamp": "2026-03-20T03:33:24.176453+00:00", "agent": "Janitor", "action": "list_raw", "path": "count=0 (empty)", "success": true, "detail": ""}

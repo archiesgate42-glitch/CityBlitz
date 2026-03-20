@@ -7,24 +7,22 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:city_blitz_app/main.dart';
+import 'package:city_blitz_app/app.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
+  testWidgets('App smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+    // Wrap with ProviderScope because CityBlitzApp is a ConsumerWidget
+    await tester.pumpWidget(
+      const ProviderScope(
+        child: CityBlitzApp(),
+      ),
+    );
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
-
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    // Verify that the title is present (based on MaterialApp title or home screen content)
+    // Looking at HomeScreen might be better, but let's just see if it pumps without error.
+    expect(find.byType(CityBlitzApp), findsOneWidget);
   });
 }

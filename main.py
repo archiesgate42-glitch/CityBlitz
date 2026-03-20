@@ -73,7 +73,7 @@ def main():
     with col2:
         st.metric("Estimated Monthly Savings", "$12,000", "+15% vs manual")
         st.write("**Recent Logs:**")
-        st.code("DEBUG: BrightData WebUnlocker status 200\nINFO: Multi-Agent consensus reached\nSUCCESS: CSV Verified")
+        st.code("DEBUG: BrightData WebUnlocker status 200\\nINFO: Multi-Agent consensus reached\\nSUCCESS: CSV Verified")
 
 if __name__ == "__main__":
     main()
